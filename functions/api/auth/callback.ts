@@ -21,8 +21,8 @@ export async function onRequestGet(context: { request: Request; env: any }) {
       headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
       body: new URLSearchParams({
         code,
-        client_id: clientId,
-        client_secret: clientSecret,
+        client_id: clientId || '',
+        client_secret: clientSecret || '',
         redirect_uri: redirectUri,
         grant_type: 'authorization_code'
       })
@@ -46,7 +46,6 @@ export async function onRequestGet(context: { request: Request; env: any }) {
       return new Response(JSON.stringify({ error: 'Failed to fetch user email' }), { status: 400 });
     }
 
-    const userId = profile.id || `usr_${Math.random().toString(36).substring(2, 10)}`;
     const email = profile.email;
     const name = profile.name || profile.email.split('@')[0];
     const picture = profile.picture || '';
@@ -55,10 +54,15 @@ export async function onRequestGet(context: { request: Request; env: any }) {
     const now = Math.floor(Date.now() / 1000);
     const expiresAt = now + (tokenData.expires_in || 3600);
 
+    let effectiveUserId = profile.id || `usr_${Math.random().toString(36).substring(2, 10)}`;
+
     const db = env.DB;
     if (db) {
-      // Upsert User in D1
-      const existingUser = await db.prepare('SELECT plan FROM users WHERE email = ?').bind(email).first();
+      // Check if user already exists in D1 (e.g. seeded admin or previous signup)
+      const existingUser = await db.prepare('SELECT id, plan FROM users WHERE email = ?').bind(email).first();
+      if (existingUser?.id) {
+        effectiveUserId = existingUser.id as string;
+      }
       const plan = isAdmin ? 'premium' : (existingUser?.plan || 'free');
 
       await db.prepare(`
@@ -67,12 +71,13 @@ export async function onRequestGet(context: { request: Request; env: any }) {
         ON CONFLICT(email) DO UPDATE SET
           name = excluded.name,
           picture = excluded.picture,
+          google_id = excluded.google_id,
           access_token = excluded.access_token,
           refresh_token = COALESCE(excluded.refresh_token, users.refresh_token),
           token_expires_at = excluded.token_expires_at,
           updated_at = excluded.updated_at
       `).bind(
-        userId,
+        effectiveUserId,
         email,
         name,
         picture,
@@ -86,9 +91,9 @@ export async function onRequestGet(context: { request: Request; env: any }) {
       ).run();
     }
 
-    // 3. Set Session Cookie & Redirect to Dashboard
+    // Set Session Cookie & Redirect to Dashboard
     const headers = new Headers();
-    headers.append('Set-Cookie', `seo_session=${userId}; Path=/; HttpOnly; SameSite=Lax; Max-Age=2592000`);
+    headers.append('Set-Cookie', `seo_session=${effectiveUserId}; Path=/; HttpOnly; Secure; SameSite=Lax; Max-Age=2592000`);
     headers.append('Location', '/dashboard');
 
     return new Response(null, {

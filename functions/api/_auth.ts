@@ -30,20 +30,20 @@ export async function getUserFromSession(request: Request, env: any): Promise<Us
     const db = env.DB;
     if (!db) return null;
     
-    // sessionToken is stored as user.id or a token map in users table
-    const result = await db.prepare('SELECT id, email, name, picture, plan FROM users WHERE id = ?').bind(sessionToken).first();
+    // Match session token against user.id OR user.email OR user.google_id
+    const result = await db.prepare('SELECT id, email, name, picture, plan FROM users WHERE id = ? OR email = ? OR google_id = ?').bind(sessionToken, sessionToken, sessionToken).first();
     if (!result) return null;
 
     // Strict admin override rule
     const adminEmail = env.ADMIN_EMAIL || 'ashishkushwaha88643@gmail.com';
-    const isOwnerAdmin = result.email.toLowerCase() === adminEmail.toLowerCase();
+    const isOwnerAdmin = (result.email as string).toLowerCase() === adminEmail.toLowerCase();
     const effectivePlan = isOwnerAdmin ? 'premium' : result.plan;
 
     return {
-      id: result.id,
-      email: result.email,
-      name: result.name || '',
-      picture: result.picture || '',
+      id: result.id as string,
+      email: result.email as string,
+      name: (result.name as string) || '',
+      picture: (result.picture as string) || '',
       plan: effectivePlan as 'free' | 'premium',
     };
   } catch (err) {
