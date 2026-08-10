@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { useAuth } from '../../context/AuthContext';
-import { Search, Crown, ShieldAlert, Wrench, BarChart2, Globe, User, ChevronDown, BookOpen, HelpCircle, Activity, Sparkles } from 'lucide-react';
+import { Search, Crown, ShieldAlert, Wrench, BarChart2, Globe, User, ChevronDown, BookOpen, HelpCircle, Sparkles, Eye, ShieldCheck, Zap, Code } from 'lucide-react';
 
 interface NavbarProps {
   currentPath: string;
@@ -65,33 +65,31 @@ export const Navbar: React.FC<NavbarProps> = ({ currentPath, navigate }) => {
 
             {toolsMenuOpen && (
               <div 
-                className="absolute top-full left-0 mt-2 w-64 glass-modal rounded-2xl p-2 shadow-2xl z-50 border border-slate-200"
+                className="absolute top-full left-0 mt-2 w-72 glass-modal rounded-2xl p-2 shadow-2xl z-50 border border-slate-200"
                 onMouseLeave={() => setToolsMenuOpen(false)}
               >
-                <div className="text-[10px] font-bold text-slate-400 uppercase tracking-wider px-3 py-1.5">Standalone Public Tools</div>
+                <div className="text-[10px] font-bold text-slate-400 uppercase tracking-wider px-3 py-1.5">Core Focused Tools</div>
                 {[
-                  { name: 'SERP Snippet Previewer', path: '/tools/meta-preview' },
-                  { name: 'Keyword Density Checker', path: '/tools/keyword-density' },
-                  { name: 'Sitemap.xml Validator', path: '/tools/sitemap-validator' },
-                  { name: 'Robots.txt Tester', path: '/tools/robots-tester' },
-                  { name: 'OpenGraph Social Preview', path: '/tools/og-preview' },
-                  { name: 'Readability Score Grade', path: '/tools/readability-checker' },
-                  { name: 'Word Count & Content Analyzer', path: '/tools/word-counter' },
-                  { name: 'URL Slug Analyzer', path: '/tools/slug-analyzer' },
-                  { name: 'Title Pixel-Width Checker', path: '/tools/title-pixel-checker' },
-                  { name: 'Canonical Tag Checker', path: '/tools/canonical-checker' },
-                ].map((t, idx) => (
-                  <button
-                    key={idx}
-                    onClick={() => {
-                      navigate(t.path);
-                      setToolsMenuOpen(false);
-                    }}
-                    className="w-full text-left px-3 py-1.5 rounded-xl text-xs font-semibold text-slate-700 hover:bg-emerald-50 hover:text-emerald-700 transition"
-                  >
-                    {t.name}
-                  </button>
-                ))}
+                  { name: 'SERP & Meta Optimizer', path: '/tools/meta-optimizer', icon: Eye },
+                  { name: 'Technical Site Auditor', path: '/tools/site-audit', icon: ShieldCheck },
+                  { name: 'PageSpeed & Core Web Vitals', path: '/tools/pagespeed', icon: Zap },
+                  { name: 'Schema Rich Result Simulator', path: '/tools/schema-validator', icon: Code },
+                ].map((t, idx) => {
+                  const Icon = t.icon;
+                  return (
+                    <button
+                      key={idx}
+                      onClick={() => {
+                        navigate(t.path);
+                        setToolsMenuOpen(false);
+                      }}
+                      className="w-full text-left px-3 py-2 rounded-xl text-xs font-semibold text-slate-700 hover:bg-emerald-50 hover:text-emerald-700 transition flex items-center gap-2"
+                    >
+                      <Icon className="w-4 h-4 text-emerald-600" />
+                      <span>{t.name}</span>
+                    </button>
+                  );
+                })}
               </div>
             )}
           </div>
@@ -151,7 +149,7 @@ export const Navbar: React.FC<NavbarProps> = ({ currentPath, navigate }) => {
           )}
         </nav>
 
-        {/* Right Auth & Profile Controls */}
+        {/* Right Auth Controls */}
         <div className="flex items-center gap-3">
           {user ? (
             <div className="flex items-center gap-3">
@@ -185,7 +183,7 @@ export const Navbar: React.FC<NavbarProps> = ({ currentPath, navigate }) => {
           ) : (
             <a
               href="/api/auth/login"
-              className="px-4 py-2 rounded-xl bg-gradient-to-r from-emerald-500 to-teal-600 hover:from-emerald-600 hover:to-teal-700 text-white font-bold text-xs shadow-md shadow-emerald-500/20 transition flex items-center gap-2"
+              className="px-4 py-2 rounded-xl bg-gradient-to-r from-emerald-500 to-teal-600 hover:from-emerald-600 to-teal-700 text-white font-bold text-xs shadow-md shadow-emerald-500/20 transition flex items-center gap-2"
             >
               <Globe className="w-3.5 h-3.5" />
               <span>Sign In with Google</span>

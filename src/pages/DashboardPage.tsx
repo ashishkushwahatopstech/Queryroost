@@ -261,7 +261,44 @@ export const DashboardPage: React.FC = () => {
         </div>
       </div>
 
-      {/* Recharts Historical Trend Line */}
+      {/* Striking-Distance Keyword Opportunities Section */}
+      {analytics?.queries && (
+        <div className="p-5 glass-card rounded-3xl border-emerald-300 bg-gradient-to-r from-emerald-50/50 via-white to-white space-y-3 shadow-sm">
+          <div className="flex justify-between items-center">
+            <div className="flex items-center gap-2 text-xs font-bold text-emerald-800">
+              <Sparkles className="w-4 h-4 text-emerald-600 fill-emerald-600" />
+              <span>STRIKING-DISTANCE KEYWORD OPPORTUNITIES (POSITION #11 - #20)</span>
+            </div>
+            <span className="text-[10px] bg-emerald-100 text-emerald-800 px-2.5 py-0.5 rounded-full font-bold">
+              Prime Page 1 Candidates
+            </span>
+          </div>
+
+          <div className="grid sm:grid-cols-2 md:grid-cols-3 gap-3">
+            {analytics.queries
+              .filter(q => q.position >= 10.5 && q.position <= 20.5)
+              .slice(0, 6)
+              .map((q, idx) => (
+                <div key={idx} className="p-3 bg-white border border-slate-200/80 rounded-2xl flex justify-between items-center text-xs shadow-sm">
+                  <div>
+                    <div className="font-extrabold text-slate-900 truncate max-w-[160px]">{q.query}</div>
+                    <div className="text-[10px] text-slate-500">{q.impressions} impressions</div>
+                  </div>
+                  <div className="text-right font-mono">
+                    <span className="text-emerald-700 font-extrabold block">#{q.position}</span>
+                    <span className="text-[10px] text-slate-400">Position</span>
+                  </div>
+                </div>
+              ))}
+
+            {analytics.queries.filter(q => q.position >= 10.5 && q.position <= 20.5).length === 0 && (
+              <div className="col-span-3 text-xs text-slate-400 py-2">
+                No striking-distance keywords found in current top queries list.
+              </div>
+            )}
+          </div>
+        </div>
+      )}
       <div className="p-6 glass-card rounded-3xl space-y-4">
         <div className="flex justify-between items-center">
           <div>
