@@ -9,4 +9,4 @@ ADMIN_EMAIL = "ashishkushwaha88643@gmail.com"
 [[d1_databases]]
 binding = "DB"
 database_name = "seo-db"
-database_id = "local-seo-db"
+database_id = "6801629f-937a-477c-99c6-60d8e5dff369"
