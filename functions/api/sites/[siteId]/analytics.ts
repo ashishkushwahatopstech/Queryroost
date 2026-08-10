@@ -79,7 +79,7 @@ export async function onRequestGet(context: { request: Request; env: any; params
           startDate: startDateStr,
           endDate: endDateStr,
           dimensions: ['date'],
-          rowLimit: 50
+          rowLimit: effectiveDays > 30 ? 500 : 50
         })
       });
 
@@ -177,9 +177,9 @@ export async function onRequestGet(context: { request: Request; env: any; params
 
   const filteredQueries = user.plan === 'free' ? mockQueries.slice(0, 10) : mockQueries;
 
-  const dates = Array.from({ length: Math.min(effectiveDays, 14) }, (_, i) => {
+  const dates = Array.from({ length: Math.min(effectiveDays, 30) }, (_, i) => {
     const d = new Date();
-    d.setDate(d.getDate() - (14 - i));
+    d.setDate(d.getDate() - (Math.min(effectiveDays, 30) - 1 - i));
     return d.toISOString().split('T')[0];
   });
 
