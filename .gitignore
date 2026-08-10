@@ -1,0 +1,17 @@
+# Dependencies
+node_modules
+.pnpm-store
+
+# Environment variables
+.env
+.env.local
+.env.production
+
+# Build output
+dist
+.output
+.wrangler
+
+# System files
+.DS_Store
+Thumbs.db

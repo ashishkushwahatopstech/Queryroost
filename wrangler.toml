@@ -1,0 +1,14 @@
+name = "seo-aktechstudio"
+compatibility_date = "2024-09-23"
+pages_build_output_dir = "./dist"
+
+[vars]
+ADMIN_EMAIL = "ashishkushwaha88643@gmail.com"
+
+[[d1_databases]]
+binding = "DB"
+database_name = "seo-db"
+database_id = "local-seo-db"
+
+[triggers]
+crons = ["0 3 * * *"] # Daily GSC data refresh at 3 AM UTC
