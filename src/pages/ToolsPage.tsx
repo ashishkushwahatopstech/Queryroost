@@ -1,7 +1,14 @@
 import React, { useState, useEffect } from 'react';
 import { useAuth } from '../context/AuthContext';
 import { runMetaPreview, runKeywordDensity, runSitemapValidator } from '../services/api';
-import { Eye, Hash, FileCode, AlertTriangle, CheckCircle, RefreshCw } from 'lucide-react';
+import { Eye, Hash, FileCode, AlertTriangle, CheckCircle, RefreshCw, FileText, Share2, BookOpen, BarChart3, Link2 } from 'lucide-react';
+import { RobotsTester } from '../components/tools/RobotsTester';
+import { OgPreviewer } from '../components/tools/OgPreviewer';
+import { ReadabilityChecker } from '../components/tools/ReadabilityChecker';
+import { ContentAnalyzer } from '../components/tools/ContentAnalyzer';
+import { SlugAnalyzer } from '../components/tools/SlugAnalyzer';
+import { TitlePixelChecker } from '../components/tools/TitlePixelChecker';
+import { CanonicalChecker } from '../components/tools/CanonicalChecker';
 
 interface ToolsPageProps {
   currentPath: string;
@@ -11,27 +18,28 @@ interface ToolsPageProps {
 export const ToolsPage: React.FC<ToolsPageProps> = ({ currentPath, navigate }) => {
   const { openUpgradeModal } = useAuth();
   
-  const [activeTool, setActiveTool] = useState<'meta' | 'keyword' | 'sitemap'>('meta');
+  const [activeTool, setActiveTool] = useState<string>('meta');
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState('');
   const [requiresPremiumError, setRequiresPremiumError] = useState(false);
 
   // Sync URL sub-route to active tool state
   useEffect(() => {
-    if (currentPath.includes('/tools/keyword-density')) {
-      setActiveTool('keyword');
-    } else if (currentPath.includes('/tools/sitemap-validator')) {
-      setActiveTool('sitemap');
-    } else {
-      setActiveTool('meta');
-    }
+    if (currentPath.includes('/tools/keyword-density')) setActiveTool('keyword');
+    else if (currentPath.includes('/tools/sitemap-validator')) setActiveTool('sitemap');
+    else if (currentPath.includes('/tools/robots-tester')) setActiveTool('robots');
+    else if (currentPath.includes('/tools/og-preview')) setActiveTool('og');
+    else if (currentPath.includes('/tools/readability-checker')) setActiveTool('readability');
+    else if (currentPath.includes('/tools/word-counter')) setActiveTool('wordcount');
+    else if (currentPath.includes('/tools/slug-analyzer')) setActiveTool('slug');
+    else if (currentPath.includes('/tools/title-pixel-checker')) setActiveTool('pixel');
+    else if (currentPath.includes('/tools/canonical-checker')) setActiveTool('canonical');
+    else setActiveTool('meta');
   }, [currentPath]);
 
-  const selectTool = (tool: 'meta' | 'keyword' | 'sitemap') => {
-    setActiveTool(tool);
-    if (tool === 'meta') navigate('/tools/meta-preview');
-    if (tool === 'keyword') navigate('/tools/keyword-density');
-    if (tool === 'sitemap') navigate('/tools/sitemap-validator');
+  const selectTool = (toolKey: string, path: string) => {
+    setActiveTool(toolKey);
+    navigate(path);
   };
 
   // Tool 1 State: Meta SERP Preview
@@ -101,55 +109,55 @@ export const ToolsPage: React.FC<ToolsPageProps> = ({ currentPath, navigate }) =
     }
   };
 
+  const toolTabs = [
+    { key: 'meta', label: 'SERP Previewer', path: '/tools/meta-preview', icon: Eye },
+    { key: 'keyword', label: 'Keyword Density', path: '/tools/keyword-density', icon: Hash },
+    { key: 'sitemap', label: 'Sitemap XML', path: '/tools/sitemap-validator', icon: FileCode },
+    { key: 'robots', label: 'Robots.txt Tester', path: '/tools/robots-tester', icon: FileText },
+    { key: 'og', label: 'OpenGraph Preview', path: '/tools/og-preview', icon: Share2 },
+    { key: 'readability', label: 'Readability Grade', path: '/tools/readability-checker', icon: BookOpen },
+    { key: 'wordcount', label: 'Word Counter', path: '/tools/word-counter', icon: BarChart3 },
+    { key: 'slug', label: 'Slug Analyzer', path: '/tools/slug-analyzer', icon: Link2 },
+    { key: 'pixel', label: 'Title Pixel Width', path: '/tools/title-pixel-checker', icon: Eye },
+    { key: 'canonical', label: 'Canonical Checker', path: '/tools/canonical-checker', icon: Link2 },
+  ];
+
   return (
     <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8 space-y-6">
       
       {/* Header */}
-      <div className="glass-card p-6 rounded-3xl flex flex-col md:flex-row md:items-center justify-between gap-4">
+      <div className="glass-card p-6 rounded-3xl space-y-4">
         <div>
           <div className="flex items-center gap-2">
             <span className="text-xs px-2.5 py-0.5 rounded-full bg-emerald-50 text-emerald-700 font-bold border border-emerald-200">Standalone Utilities</span>
             <span className="text-xs text-slate-500">• Free Tier: 3 Uses / Day</span>
           </div>
           <h1 className="text-2xl font-extrabold text-slate-900 mt-1">SEO Utility Suite</h1>
-          <p className="text-xs text-slate-500">High-performance standalone tools for meta SERP preview, keyword density, and sitemap auditing.</p>
+          <p className="text-xs text-slate-500">10 high-performance tools for meta preview, Core Web Vitals, readability, robots.txt, schema & canonical checking.</p>
         </div>
 
-        {/* Tool selector sub-route buttons */}
-        <div className="flex items-center gap-1.5 bg-slate-100/80 p-1.5 rounded-2xl border border-slate-200/80">
-          <button
-            onClick={() => selectTool('meta')}
-            className={`px-4 py-2 rounded-xl text-xs font-bold transition flex items-center gap-1.5 ${
-              activeTool === 'meta' ? 'bg-white text-slate-900 shadow-sm' : 'text-slate-600 hover:text-slate-900'
-            }`}
-          >
-            <Eye className="w-4 h-4 text-emerald-600" />
-            <span>SERP Previewer</span>
-          </button>
-
-          <button
-            onClick={() => selectTool('keyword')}
-            className={`px-4 py-2 rounded-xl text-xs font-bold transition flex items-center gap-1.5 ${
-              activeTool === 'keyword' ? 'bg-white text-slate-900 shadow-sm' : 'text-slate-600 hover:text-slate-900'
-            }`}
-          >
-            <Hash className="w-4 h-4 text-emerald-600" />
-            <span>Keyword Density</span>
-          </button>
-
-          <button
-            onClick={() => selectTool('sitemap')}
-            className={`px-4 py-2 rounded-xl text-xs font-bold transition flex items-center gap-1.5 ${
-              activeTool === 'sitemap' ? 'bg-white text-slate-900 shadow-sm' : 'text-slate-600 hover:text-slate-900'
-            }`}
-          >
-            <FileCode className="w-4 h-4 text-emerald-600" />
-            <span>Sitemap Validator</span>
-          </button>
+        {/* 10 Tool selector sub-route buttons */}
+        <div className="flex items-center gap-1.5 bg-slate-100/80 p-1.5 rounded-2xl border border-slate-200/80 overflow-x-auto">
+          {toolTabs.map((tab) => {
+            const Icon = tab.icon;
+            const isActive = activeTool === tab.key;
+            return (
+              <button
+                key={tab.key}
+                onClick={() => selectTool(tab.key, tab.path)}
+                className={`px-3 py-1.5 rounded-xl text-xs font-bold transition flex items-center gap-1.5 shrink-0 ${
+                  isActive ? 'bg-white text-slate-900 shadow-sm' : 'text-slate-600 hover:text-slate-900'
+                }`}
+              >
+                <Icon className="w-3.5 h-3.5 text-emerald-600" />
+                <span>{tab.label}</span>
+              </button>
+            );
+          })}
         </div>
       </div>
 
-      {/* Error & Premium Prompt Banner */}
+      {/* Error Banner */}
       {error && (
         <div className="p-4 bg-rose-50 border border-rose-200 rounded-2xl text-rose-800 text-xs flex items-center justify-between gap-3">
           <div className="flex items-center gap-2">
@@ -167,7 +175,7 @@ export const ToolsPage: React.FC<ToolsPageProps> = ({ currentPath, navigate }) =
         </div>
       )}
 
-      {/* Tool 1: SERP Meta Tag Previewer (/tools/meta-preview) */}
+      {/* Tool Views */}
       {activeTool === 'meta' && (
         <div className="grid md:grid-cols-2 gap-6">
           <div className="glass-card p-6 rounded-3xl space-y-4">
@@ -220,7 +228,6 @@ export const ToolsPage: React.FC<ToolsPageProps> = ({ currentPath, navigate }) =
             </button>
           </div>
 
-          {/* SERP Output Card */}
           <div className="glass-card p-6 rounded-3xl space-y-4">
             <h3 className="text-base font-bold text-slate-900">Google Search Snippet Preview</h3>
             
@@ -236,23 +243,10 @@ export const ToolsPage: React.FC<ToolsPageProps> = ({ currentPath, navigate }) =
                 {metaResult?.serp?.description || metaDesc || 'Connect your Google Search Console to track real search query rankings, average positions, clicks, and CTR.'}
               </p>
             </div>
-
-            {/* Social Card Preview */}
-            <div className="p-4 bg-slate-100/60 border border-slate-200/80 rounded-2xl">
-              <span className="text-[10px] uppercase tracking-wider text-slate-500 font-bold mb-2 block">OpenGraph / Twitter Card Preview</span>
-              <div className="h-32 bg-slate-200/60 rounded-xl overflow-hidden flex items-center justify-center text-xs text-slate-500 border border-slate-300/60">
-                {metaResult?.serp?.ogImage ? (
-                  <img src={metaResult.serp.ogImage} alt="OG" className="w-full h-full object-cover" />
-                ) : (
-                  <span>[ OpenGraph Image Preview ]</span>
-                )}
-              </div>
-            </div>
           </div>
         </div>
       )}
 
-      {/* Tool 2: Keyword Density Checker (/tools/keyword-density) */}
       {activeTool === 'keyword' && (
         <div className="grid md:grid-cols-2 gap-6">
           <div className="glass-card p-6 rounded-3xl space-y-4">
@@ -275,7 +269,7 @@ export const ToolsPage: React.FC<ToolsPageProps> = ({ currentPath, navigate }) =
             <button
               onClick={handleRunKeywordDensity}
               disabled={loading || !keywordText.trim()}
-              className="w-full py-3 bg-gradient-to-r from-emerald-500 to-teal-600 hover:from-emerald-600 hover:to-teal-700 text-white font-bold text-xs rounded-xl shadow-md transition flex items-center justify-center gap-2 disabled:opacity-50"
+              className="w-full py-3 bg-gradient-to-r from-emerald-500 to-teal-600 hover:from-emerald-600 text-white font-bold text-xs rounded-xl shadow-md transition flex items-center justify-center gap-2 disabled:opacity-50"
             >
               {loading ? <RefreshCw className="w-4 h-4 animate-spin" /> : 'Analyze Keyword Density'}
             </button>
@@ -313,7 +307,6 @@ export const ToolsPage: React.FC<ToolsPageProps> = ({ currentPath, navigate }) =
         </div>
       )}
 
-      {/* Tool 3: Sitemap.xml Validator (/tools/sitemap-validator) */}
       {activeTool === 'sitemap' && (
         <div className="grid md:grid-cols-2 gap-6">
           <div className="glass-card p-6 rounded-3xl space-y-4">
@@ -336,7 +329,7 @@ export const ToolsPage: React.FC<ToolsPageProps> = ({ currentPath, navigate }) =
             <button
               onClick={handleRunSitemapValidator}
               disabled={loading || !sitemapUrlInput.trim()}
-              className="w-full py-3 bg-gradient-to-r from-emerald-500 to-teal-600 hover:from-emerald-600 hover:to-teal-700 text-white font-bold text-xs rounded-xl shadow-md transition flex items-center justify-center gap-2 disabled:opacity-50"
+              className="w-full py-3 bg-gradient-to-r from-emerald-500 to-teal-600 hover:from-emerald-600 text-white font-bold text-xs rounded-xl shadow-md transition flex items-center justify-center gap-2 disabled:opacity-50"
             >
               {loading ? <RefreshCw className="w-4 h-4 animate-spin" /> : 'Fetch & Validate Sitemap XML'}
             </button>
@@ -371,6 +364,14 @@ export const ToolsPage: React.FC<ToolsPageProps> = ({ currentPath, navigate }) =
           </div>
         </div>
       )}
+
+      {activeTool === 'robots' && <RobotsTester />}
+      {activeTool === 'og' && <OgPreviewer />}
+      {activeTool === 'readability' && <ReadabilityChecker />}
+      {activeTool === 'wordcount' && <ContentAnalyzer />}
+      {activeTool === 'slug' && <SlugAnalyzer />}
+      {activeTool === 'pixel' && <TitlePixelChecker />}
+      {activeTool === 'canonical' && <CanonicalChecker />}
 
     </div>
   );

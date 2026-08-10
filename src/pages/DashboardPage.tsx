@@ -3,7 +3,12 @@ import { useAuth } from '../context/AuthContext';
 import { ConnectedSite, SiteAnalyticsResponse } from '../types';
 import { fetchConnectedSites, connectSite, fetchSiteAnalytics, fetchSiteSitemap } from '../services/api';
 import { AreaChart, Area, XAxis, YAxis, Tooltip, ResponsiveContainer, CartesianGrid } from 'recharts';
-import { Plus, Lock, Globe, Search, RefreshCw, AlertTriangle, ChevronDown, CheckCircle, Smartphone, Sparkles, FileText } from 'lucide-react';
+import { Plus, Lock, Globe, Search, RefreshCw, AlertTriangle, ChevronDown, CheckCircle, Smartphone, Sparkles, FileText, ShieldCheck, Zap, Code, Network, Download } from 'lucide-react';
+import { SiteAuditView } from '../components/dashboard/SiteAuditView';
+import { PageSpeedView } from '../components/dashboard/PageSpeedView';
+import { SchemaValidatorView } from '../components/dashboard/SchemaValidatorView';
+import { InternalLinkMapView } from '../components/dashboard/InternalLinkMapView';
+import { PerformanceReportView } from '../components/dashboard/PerformanceReportView';
 
 export const DashboardPage: React.FC = () => {
   const { user, openUpgradeModal } = useAuth();
@@ -25,7 +30,7 @@ export const DashboardPage: React.FC = () => {
   const [addSiteError, setAddSiteError] = useState<string>('');
   
   const [searchQueryFilter, setSearchQueryFilter] = useState<string>('');
-  const [activeTab, setActiveTab] = useState<'queries' | 'pages' | 'sitemap'>('queries');
+  const [activeTab, setActiveTab] = useState<'queries' | 'pages' | 'audit' | 'pagespeed' | 'schema' | 'links' | 'sitemap' | 'report'>('queries');
 
   // Load connected sites
   const loadSites = async () => {
@@ -223,7 +228,6 @@ export const DashboardPage: React.FC = () => {
 
       {/* Analytics Summary Metric Cards */}
       <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
-        
         <div className="p-5 glass-card glass-card-hover rounded-3xl relative overflow-hidden">
           <div className="text-xs text-slate-500 font-semibold">Total Clicks</div>
           <div className="text-3xl font-extrabold text-slate-900 mt-2 font-mono">
@@ -255,7 +259,6 @@ export const DashboardPage: React.FC = () => {
           </div>
           <p className="text-[11px] text-slate-500 mt-1 font-semibold">Google Search Position</p>
         </div>
-
       </div>
 
       {/* Recharts Historical Trend Line */}
@@ -298,40 +301,80 @@ export const DashboardPage: React.FC = () => {
         </div>
       </div>
 
-      {/* Main Breakdown Section (Queries / Pages / Sitemap Status) */}
+      {/* Main Breakdown Section (Queries / Pages / Technical Audit / PageSpeed / Schema / Links / Reports) */}
       <div className="p-6 glass-card rounded-3xl space-y-6">
         
-        {/* Navigation Tabs */}
+        {/* Navigation Tabs Bar */}
         <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 pb-4 border-b border-slate-200/80">
-          <div className="flex items-center gap-2 bg-slate-100/80 p-1.5 rounded-2xl border border-slate-200/80">
+          <div className="flex items-center gap-1.5 bg-slate-100/80 p-1.5 rounded-2xl border border-slate-200/80 overflow-x-auto">
             <button
               onClick={() => setActiveTab('queries')}
-              className={`px-4 py-2 rounded-xl text-xs font-bold transition flex items-center gap-2 ${
+              className={`px-3.5 py-1.5 rounded-xl text-xs font-bold transition flex items-center gap-1.5 shrink-0 ${
                 activeTab === 'queries' ? 'bg-white text-slate-900 shadow-sm' : 'text-slate-600 hover:text-slate-900'
               }`}
             >
               <Search className="w-3.5 h-3.5 text-emerald-600" />
-              <span>Search Queries ({analytics?.queries.length || 0})</span>
+              <span>Queries ({analytics?.queries.length || 0})</span>
             </button>
 
             <button
               onClick={() => setActiveTab('pages')}
-              className={`px-4 py-2 rounded-xl text-xs font-bold transition flex items-center gap-2 ${
+              className={`px-3.5 py-1.5 rounded-xl text-xs font-bold transition flex items-center gap-1.5 shrink-0 ${
                 activeTab === 'pages' ? 'bg-white text-slate-900 shadow-sm' : 'text-slate-600 hover:text-slate-900'
               }`}
             >
               <FileText className="w-3.5 h-3.5 text-emerald-600" />
-              <span>Top Pages ({analytics?.pages.length || 0})</span>
+              <span>Top Pages</span>
             </button>
 
             <button
-              onClick={() => setActiveTab('sitemap')}
-              className={`px-4 py-2 rounded-xl text-xs font-bold transition flex items-center gap-2 ${
-                activeTab === 'sitemap' ? 'bg-white text-slate-900 shadow-sm' : 'text-slate-600 hover:text-slate-900'
+              onClick={() => setActiveTab('audit')}
+              className={`px-3.5 py-1.5 rounded-xl text-xs font-bold transition flex items-center gap-1.5 shrink-0 ${
+                activeTab === 'audit' ? 'bg-white text-slate-900 shadow-sm' : 'text-slate-600 hover:text-slate-900'
               }`}
             >
-              <Smartphone className="w-3.5 h-3.5 text-emerald-600" />
-              <span>Indexing & Sitemap</span>
+              <ShieldCheck className="w-3.5 h-3.5 text-emerald-600" />
+              <span>Site Audit</span>
+            </button>
+
+            <button
+              onClick={() => setActiveTab('pagespeed')}
+              className={`px-3.5 py-1.5 rounded-xl text-xs font-bold transition flex items-center gap-1.5 shrink-0 ${
+                activeTab === 'pagespeed' ? 'bg-white text-slate-900 shadow-sm' : 'text-slate-600 hover:text-slate-900'
+              }`}
+            >
+              <Zap className="w-3.5 h-3.5 text-emerald-600" />
+              <span>PageSpeed Vitals</span>
+            </button>
+
+            <button
+              onClick={() => setActiveTab('schema')}
+              className={`px-3.5 py-1.5 rounded-xl text-xs font-bold transition flex items-center gap-1.5 shrink-0 ${
+                activeTab === 'schema' ? 'bg-white text-slate-900 shadow-sm' : 'text-slate-600 hover:text-slate-900'
+              }`}
+            >
+              <Code className="w-3.5 h-3.5 text-emerald-600" />
+              <span>Schema</span>
+            </button>
+
+            <button
+              onClick={() => setActiveTab('links')}
+              className={`px-3.5 py-1.5 rounded-xl text-xs font-bold transition flex items-center gap-1.5 shrink-0 ${
+                activeTab === 'links' ? 'bg-white text-slate-900 shadow-sm' : 'text-slate-600 hover:text-slate-900'
+              }`}
+            >
+              <Network className="w-3.5 h-3.5 text-emerald-600" />
+              <span>Link Map</span>
+            </button>
+
+            <button
+              onClick={() => setActiveTab('report')}
+              className={`px-3.5 py-1.5 rounded-xl text-xs font-bold transition flex items-center gap-1.5 shrink-0 ${
+                activeTab === 'report' ? 'bg-white text-slate-900 shadow-sm' : 'text-slate-600 hover:text-slate-900'
+              }`}
+            >
+              <Download className="w-3.5 h-3.5 text-emerald-600" />
+              <span>Reports</span>
             </button>
           </div>
 
@@ -423,40 +466,29 @@ export const DashboardPage: React.FC = () => {
           </div>
         )}
 
-        {/* Tab 3: Indexing & Sitemap */}
-        {activeTab === 'sitemap' && (
-          <div className="space-y-4">
-            <div className="grid md:grid-cols-2 gap-4">
-              <div className="p-4 bg-white rounded-2xl border border-slate-200/80 shadow-sm">
-                <h4 className="font-bold text-slate-900 text-sm mb-2 flex items-center gap-2">
-                  <CheckCircle className="w-4 h-4 text-emerald-600" />
-                  <span>Sitemap Status (Google Search Console)</span>
-                </h4>
-                {sitemapData?.sitemaps && sitemapData.sitemaps.length > 0 ? (
-                  <div className="space-y-2 text-xs text-slate-600">
-                    <div><strong>Path:</strong> <code className="text-emerald-700 font-mono">{sitemapData.sitemaps[0].path}</code></div>
-                    <div><strong>Last Downloaded:</strong> {new Date(sitemapData.sitemaps[0].lastDownloaded || Date.now()).toLocaleDateString()}</div>
-                    <div><strong>Submitted Pages:</strong> {sitemapData.sitemaps[0].contents?.[0]?.submitted || 142}</div>
-                    <div><strong>Indexed Pages:</strong> <span className="text-emerald-600 font-bold">{sitemapData.sitemaps[0].contents?.[0]?.indexed || 138}</span></div>
-                  </div>
-                ) : (
-                  <p className="text-xs text-slate-400">No sitemap found in Google Search Console.</p>
-                )}
-              </div>
+        {/* Tab 3: Site Audit */}
+        {activeTab === 'audit' && (
+          <SiteAuditView siteId={selectedSite?.id || selectedSite?.site_url || 'site_0'} />
+        )}
 
-              <div className="p-4 bg-white rounded-2xl border border-slate-200/80 shadow-sm">
-                <h4 className="font-bold text-slate-900 text-sm mb-2 flex items-center gap-2">
-                  <Smartphone className="w-4 h-4 text-emerald-600" />
-                  <span>Mobile Usability Status</span>
-                </h4>
-                <div className="space-y-2 text-xs text-slate-600">
-                  <div><strong>Mobile Status:</strong> <span className="px-2 py-0.5 rounded bg-emerald-100 text-emerald-800 font-bold uppercase text-[10px]">PASSING</span></div>
-                  <div><strong>Issues Detected:</strong> 0</div>
-                  <div><strong>Checked Date:</strong> {new Date().toLocaleDateString()}</div>
-                </div>
-              </div>
-            </div>
-          </div>
+        {/* Tab 4: PageSpeed & Vitals */}
+        {activeTab === 'pagespeed' && (
+          <PageSpeedView siteUrl={selectedSite?.site_url || 'https://aktechstudio.com'} />
+        )}
+
+        {/* Tab 5: Schema Validator */}
+        {activeTab === 'schema' && (
+          <SchemaValidatorView siteUrl={selectedSite?.site_url || 'https://aktechstudio.com'} />
+        )}
+
+        {/* Tab 6: Link Map */}
+        {activeTab === 'links' && (
+          <InternalLinkMapView siteId={selectedSite?.id || selectedSite?.site_url || 'site_0'} />
+        )}
+
+        {/* Tab 7: Reports */}
+        {activeTab === 'report' && (
+          <PerformanceReportView analytics={analytics} />
         )}
 
       </div>

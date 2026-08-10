@@ -1,6 +1,6 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { useAuth } from '../../context/AuthContext';
-import { Search, Crown, LogOut, ShieldAlert, Wrench, BarChart2, Globe, User } from 'lucide-react';
+import { Search, Crown, ShieldAlert, Wrench, BarChart2, Globe, User, ChevronDown, BookOpen, HelpCircle, Activity, Sparkles } from 'lucide-react';
 
 interface NavbarProps {
   currentPath: string;
@@ -8,7 +8,8 @@ interface NavbarProps {
 }
 
 export const Navbar: React.FC<NavbarProps> = ({ currentPath, navigate }) => {
-  const { user, handleLogout, openUpgradeModal } = useAuth();
+  const { user, openUpgradeModal } = useAuth();
+  const [toolsMenuOpen, setToolsMenuOpen] = useState(false);
 
   return (
     <header className="sticky top-0 z-40 w-full glass-nav">
@@ -33,11 +34,11 @@ export const Navbar: React.FC<NavbarProps> = ({ currentPath, navigate }) => {
           </div>
         </div>
 
-        {/* Navigation Links with URLs */}
-        <nav className="hidden md:flex items-center gap-1 glass-card p-1.5 rounded-2xl">
+        {/* Center Navigation Links & Tools Dropdown */}
+        <nav className="hidden lg:flex items-center gap-1 glass-card p-1.5 rounded-2xl">
           <button
             onClick={() => navigate('/dashboard')}
-            className={`flex items-center gap-2 px-4 py-1.5 rounded-xl text-xs font-bold transition ${
+            className={`flex items-center gap-1.5 px-3.5 py-1.5 rounded-xl text-xs font-bold transition ${
               currentPath === '/dashboard' || currentPath === '/'
                 ? 'bg-emerald-500 text-white shadow-md shadow-emerald-500/20'
                 : 'text-slate-600 hover:text-slate-900 hover:bg-slate-100/80'
@@ -47,25 +48,89 @@ export const Navbar: React.FC<NavbarProps> = ({ currentPath, navigate }) => {
             <span>Dashboard</span>
           </button>
 
+          {/* Tools Dropdown Menu */}
+          <div className="relative">
+            <button
+              onClick={() => setToolsMenuOpen(!toolsMenuOpen)}
+              className={`flex items-center gap-1.5 px-3.5 py-1.5 rounded-xl text-xs font-bold transition ${
+                currentPath.startsWith('/tools')
+                  ? 'bg-emerald-500 text-white shadow-md shadow-emerald-500/20'
+                  : 'text-slate-600 hover:text-slate-900 hover:bg-slate-100/80'
+              }`}
+            >
+              <Wrench className="w-3.5 h-3.5" />
+              <span>SEO Tools</span>
+              <ChevronDown className="w-3.5 h-3.5 text-slate-400" />
+            </button>
+
+            {toolsMenuOpen && (
+              <div 
+                className="absolute top-full left-0 mt-2 w-64 glass-modal rounded-2xl p-2 shadow-2xl z-50 border border-slate-200"
+                onMouseLeave={() => setToolsMenuOpen(false)}
+              >
+                <div className="text-[10px] font-bold text-slate-400 uppercase tracking-wider px-3 py-1.5">Standalone Public Tools</div>
+                {[
+                  { name: 'SERP Snippet Previewer', path: '/tools/meta-preview' },
+                  { name: 'Keyword Density Checker', path: '/tools/keyword-density' },
+                  { name: 'Sitemap.xml Validator', path: '/tools/sitemap-validator' },
+                  { name: 'Robots.txt Tester', path: '/tools/robots-tester' },
+                  { name: 'OpenGraph Social Preview', path: '/tools/og-preview' },
+                  { name: 'Readability Score Grade', path: '/tools/readability-checker' },
+                  { name: 'Word Count & Content Analyzer', path: '/tools/word-counter' },
+                  { name: 'URL Slug Analyzer', path: '/tools/slug-analyzer' },
+                  { name: 'Title Pixel-Width Checker', path: '/tools/title-pixel-checker' },
+                  { name: 'Canonical Tag Checker', path: '/tools/canonical-checker' },
+                ].map((t, idx) => (
+                  <button
+                    key={idx}
+                    onClick={() => {
+                      navigate(t.path);
+                      setToolsMenuOpen(false);
+                    }}
+                    className="w-full text-left px-3 py-1.5 rounded-xl text-xs font-semibold text-slate-700 hover:bg-emerald-50 hover:text-emerald-700 transition"
+                  >
+                    {t.name}
+                  </button>
+                ))}
+              </div>
+            )}
+          </div>
+
           <button
-            onClick={() => navigate('/tools')}
-            className={`flex items-center gap-2 px-4 py-1.5 rounded-xl text-xs font-bold transition ${
-              currentPath.startsWith('/tools')
-                ? 'bg-emerald-500 text-white shadow-md shadow-emerald-500/20'
-                : 'text-slate-600 hover:text-slate-900 hover:bg-slate-100/80'
+            onClick={() => navigate('/blog')}
+            className={`flex items-center gap-1.5 px-3 py-1.5 rounded-xl text-xs font-bold transition ${
+              currentPath.startsWith('/blog') ? 'bg-emerald-500 text-white shadow-sm' : 'text-slate-600 hover:text-slate-900 hover:bg-slate-100/80'
             }`}
           >
-            <Wrench className="w-3.5 h-3.5" />
-            <span>SEO Tools</span>
+            <BookOpen className="w-3.5 h-3.5" />
+            <span>Blog</span>
+          </button>
+
+          <button
+            onClick={() => navigate('/pricing')}
+            className={`flex items-center gap-1.5 px-3 py-1.5 rounded-xl text-xs font-bold transition ${
+              currentPath === '/pricing' ? 'bg-emerald-500 text-white shadow-sm' : 'text-slate-600 hover:text-slate-900 hover:bg-slate-100/80'
+            }`}
+          >
+            <Sparkles className="w-3.5 h-3.5" />
+            <span>Pricing</span>
+          </button>
+
+          <button
+            onClick={() => navigate('/help')}
+            className={`flex items-center gap-1.5 px-3 py-1.5 rounded-xl text-xs font-bold transition ${
+              currentPath === '/help' ? 'bg-emerald-500 text-white shadow-sm' : 'text-slate-600 hover:text-slate-900 hover:bg-slate-100/80'
+            }`}
+          >
+            <HelpCircle className="w-3.5 h-3.5" />
+            <span>Help</span>
           </button>
 
           {user && (
             <button
               onClick={() => navigate('/profile')}
-              className={`flex items-center gap-2 px-4 py-1.5 rounded-xl text-xs font-bold transition ${
-                currentPath === '/profile'
-                  ? 'bg-emerald-500 text-white shadow-md shadow-emerald-500/20'
-                  : 'text-slate-600 hover:text-slate-900 hover:bg-slate-100/80'
+              className={`flex items-center gap-1.5 px-3 py-1.5 rounded-xl text-xs font-bold transition ${
+                currentPath === '/profile' ? 'bg-emerald-500 text-white shadow-sm' : 'text-slate-600 hover:text-slate-900 hover:bg-slate-100/80'
               }`}
             >
               <User className="w-3.5 h-3.5" />
@@ -76,10 +141,8 @@ export const Navbar: React.FC<NavbarProps> = ({ currentPath, navigate }) => {
           {user?.isAdmin && (
             <button
               onClick={() => navigate('/admin')}
-              className={`flex items-center gap-2 px-4 py-1.5 rounded-xl text-xs font-bold transition ${
-                currentPath === '/admin'
-                  ? 'bg-purple-600 text-white shadow-md shadow-purple-600/20'
-                  : 'text-purple-700 hover:bg-purple-50'
+              className={`flex items-center gap-1.5 px-3 py-1.5 rounded-xl text-xs font-bold transition ${
+                currentPath === '/admin' ? 'bg-purple-600 text-white shadow-sm' : 'text-purple-700 hover:bg-purple-50'
               }`}
             >
               <ShieldAlert className="w-3.5 h-3.5" />
@@ -88,11 +151,10 @@ export const Navbar: React.FC<NavbarProps> = ({ currentPath, navigate }) => {
           )}
         </nav>
 
-        {/* Right Action Controls */}
+        {/* Right Auth & Profile Controls */}
         <div className="flex items-center gap-3">
           {user ? (
             <div className="flex items-center gap-3">
-              {/* Plan Badge */}
               <div 
                 onClick={openUpgradeModal}
                 className={`cursor-pointer px-3 py-1.5 rounded-xl border flex items-center gap-1.5 text-xs font-bold transition hover:scale-105 ${
@@ -106,7 +168,6 @@ export const Navbar: React.FC<NavbarProps> = ({ currentPath, navigate }) => {
                 {user.plan === 'free' && <span className="text-[10px] text-emerald-600 font-semibold underline ml-0.5">Upgrade</span>}
               </div>
 
-              {/* User Avatar & Profile Link */}
               <div 
                 onClick={() => navigate('/profile')}
                 className="flex items-center gap-2 pl-2 border-l border-slate-200/80 cursor-pointer group"
@@ -119,9 +180,6 @@ export const Navbar: React.FC<NavbarProps> = ({ currentPath, navigate }) => {
                     {user.email[0].toUpperCase()}
                   </div>
                 )}
-                <span className="hidden lg:inline-block text-xs font-semibold text-slate-700 group-hover:text-emerald-600 transition truncate max-w-[100px]">
-                  {user.name || user.email}
-                </span>
               </div>
             </div>
           ) : (

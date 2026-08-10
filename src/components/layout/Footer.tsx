@@ -10,16 +10,22 @@ export const Footer: React.FC = () => {
             <span className="text-xs text-slate-500">• Part of the AK Tech Studio Ecosystem</span>
           </div>
           <p className="text-xs text-slate-500 mt-1">
-            Free Google Search Console rank tracker and SEO analytics platform. Built with Cloudflare Pages, Workers, D1 database & Google Search Console API.
+            Free Google Search Console rank tracker, PageSpeed Insights auditor, & technical SEO analytics platform.
           </p>
         </div>
 
-        <div className="flex items-center gap-4 text-xs font-medium text-slate-600">
-          <a href="https://aktechstudio.com" target="_blank" rel="noreferrer" className="hover:text-emerald-600 transition">aktechstudio.com</a>
+        <div className="flex flex-wrap items-center gap-4 text-xs font-semibold text-slate-600">
+          <a href="/pricing" className="hover:text-emerald-600 transition">Pricing</a>
           <span>•</span>
-          <a href="https://tool.aktechstudio.com" target="_blank" rel="noreferrer" className="hover:text-emerald-600 transition">tool.aktechstudio.com</a>
+          <a href="/blog" className="hover:text-emerald-600 transition">Blog</a>
           <span>•</span>
-          <a href="https://gallery.aktechstudio.com" target="_blank" rel="noreferrer" className="hover:text-emerald-600 transition">gallery.aktechstudio.com</a>
+          <a href="/how-it-works" className="hover:text-emerald-600 transition">How It Works</a>
+          <span>•</span>
+          <a href="/help" className="hover:text-emerald-600 transition">Help & FAQ</a>
+          <span>•</span>
+          <a href="/changelog" className="hover:text-emerald-600 transition">Changelog</a>
+          <span>•</span>
+          <a href="/status" className="hover:text-emerald-600 transition">Status</a>
         </div>
       </div>
     </footer>
