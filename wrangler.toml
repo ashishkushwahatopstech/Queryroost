@@ -9,6 +9,3 @@ ADMIN_EMAIL = "ashishkushwaha88643@gmail.com"
 binding = "DB"
 database_name = "seo-db"
 database_id = "local-seo-db"
-
-[triggers]
-crons = ["0 3 * * *"] # Daily GSC data refresh at 3 AM UTC
