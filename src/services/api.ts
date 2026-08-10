@@ -68,18 +68,18 @@ export async function fetchSiteAudit(siteId: string): Promise<any> {
   return await res.json();
 }
 
+export async function fetchInternalLinks(siteId: string): Promise<any> {
+  const res = await fetch(`/api/sites/${encodeURIComponent(siteId)}/links`);
+  if (!res.ok) return { totalInternalLinks: 0, orphanPages: [], linkDistribution: [] };
+  return await res.json();
+}
+
 export async function fetchPageSpeed(url: string, strategy: string = 'mobile'): Promise<any> {
   const res = await fetch(`/api/pagespeed?url=${encodeURIComponent(url)}&strategy=${strategy}`);
   if (!res.ok) {
     const errData = await res.json().catch(() => ({}));
     throw new Error(errData.message || errData.error || 'PageSpeed Insights fetch failed');
   }
-  return await res.json();
-}
-
-export async function fetchInternalLinks(siteId: string): Promise<any> {
-  const res = await fetch(`/api/sites/${encodeURIComponent(siteId)}/links`);
-  if (!res.ok) return { totalInternalLinks: 0, orphanPages: [], linkDistribution: [] };
   return await res.json();
 }
 
@@ -94,28 +94,6 @@ export async function runMetaPreview(url: string, title?: string, description?: 
   return data;
 }
 
-export async function runKeywordDensity(text: string): Promise<any> {
-  const res = await fetch('/api/tools/keyword-density', {
-    method: 'POST',
-    headers: { 'Content-Type': 'application/json' },
-    body: JSON.stringify({ text })
-  });
-  const data = await res.json();
-  if (!res.ok) throw new Error(data.message || data.error || 'Failed to run keyword density');
-  return data;
-}
-
-export async function runSitemapValidator(url: string): Promise<any> {
-  const res = await fetch('/api/tools/sitemap-validator', {
-    method: 'POST',
-    headers: { 'Content-Type': 'application/json' },
-    body: JSON.stringify({ url })
-  });
-  const data = await res.json();
-  if (!res.ok) throw new Error(data.message || data.error || 'Failed to validate sitemap');
-  return data;
-}
-
 export async function runSchemaValidator(url?: string, schemaCode?: string): Promise<any> {
   const res = await fetch('/api/tools/schema-validator', {
     method: 'POST',
@@ -124,17 +102,6 @@ export async function runSchemaValidator(url?: string, schemaCode?: string): Pro
   });
   const data = await res.json();
   if (!res.ok) throw new Error(data.message || data.error || 'Failed to validate schema');
-  return data;
-}
-
-export async function runCanonicalChecker(url: string): Promise<any> {
-  const res = await fetch('/api/tools/canonical-checker', {
-    method: 'POST',
-    headers: { 'Content-Type': 'application/json' },
-    body: JSON.stringify({ url })
-  });
-  const data = await res.json();
-  if (!res.ok) throw new Error(data.message || data.error || 'Failed to check canonical tag');
   return data;
 }
 

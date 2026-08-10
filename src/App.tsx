@@ -5,7 +5,6 @@ import { Footer } from './components/layout/Footer';
 import { UpgradeModal } from './components/common/UpgradeModal';
 import { LandingPage } from './pages/LandingPage';
 import { DashboardPage } from './pages/DashboardPage';
-import { ToolsPage } from './pages/ToolsPage';
 import { AdminPage } from './pages/AdminPage';
 import { ProfilePage } from './pages/ProfilePage';
 import { PricingPage } from './pages/PricingPage';
@@ -19,18 +18,33 @@ import { AuthCallbackPage } from './pages/AuthCallbackPage';
 const AppContent: React.FC = () => {
   const { user } = useAuth();
   const [currentPath, setCurrentPath] = useState<string>(window.location.pathname);
+  const [activeSiteParam, setActiveSiteParam] = useState<string>('');
 
   useEffect(() => {
     const handlePopState = () => {
       setCurrentPath(window.location.pathname);
+      const searchParams = new URLSearchParams(window.location.search);
+      const site = searchParams.get('site');
+      if (site) setActiveSiteParam(site);
     };
+
+    const searchParams = new URLSearchParams(window.location.search);
+    const site = searchParams.get('site');
+    if (site) setActiveSiteParam(site);
+
     window.addEventListener('popstate', handlePopState);
     return () => window.removeEventListener('popstate', handlePopState);
   }, []);
 
   const navigate = (path: string) => {
     window.history.pushState({}, '', path);
-    setCurrentPath(path);
+    setCurrentPath(path.split('?')[0]);
+
+    if (path.includes('site=')) {
+      const searchParams = new URLSearchParams(path.split('?')[1]);
+      const site = searchParams.get('site');
+      if (site) setActiveSiteParam(site);
+    }
   };
 
   if (currentPath.includes('/auth/callback')) {
@@ -38,8 +52,7 @@ const AppContent: React.FC = () => {
   }
 
   const isLandingPath = currentPath === '/' || currentPath === '';
-  const isDashboardPath = currentPath === '/dashboard';
-  const isToolsPath = currentPath.startsWith('/tools');
+  const isDashboardPath = currentPath === '/dashboard' || currentPath === '/site';
   const isProfilePath = currentPath === '/profile';
   const isAdminPath = currentPath === '/admin';
   const isPricingPath = currentPath === '/pricing';
@@ -56,17 +69,15 @@ const AppContent: React.FC = () => {
       <main className="flex-1">
         {/* Landing Page */}
         {(isLandingPath && !user) && (
-          <LandingPage onGoToDashboard={() => navigate('/dashboard')} />
+          <LandingPage onGoToDashboard={(siteUrl) => {
+            if (siteUrl) setActiveSiteParam(siteUrl);
+            navigate(siteUrl ? `/dashboard?site=${encodeURIComponent(siteUrl)}` : '/dashboard');
+          }} />
         )}
 
         {/* Dashboard Page */}
         {(isDashboardPath || (isLandingPath && user)) && (
-          <DashboardPage />
-        )}
-
-        {/* Tools Page */}
-        {isToolsPath && (
-          <ToolsPage currentPath={currentPath} navigate={navigate} />
+          <DashboardPage initialSiteUrl={activeSiteParam} />
         )}
 
         {/* Profile Page */}
