@@ -28,7 +28,22 @@ A full-stack, serverless SEO analytics platform built for **seo.aktechstudio.com
 - Indexing & Sitemap status audit tab (from GSC API).
 - Mobile Usability status audit tab.
 
-### 3. Server-Side Free vs. Premium Tier Enforcement
+### 3. Dedicated User Profile Page (`/profile`)
+- Displays user avatar, Google verified email, account ID, joined date, connected sites count, session token status, and subscription quota meters.
+- Quick shortcuts for upgrading to Premium, navigating to rank dashboard, and signing out.
+
+### 4. URL-Based Deep Routing
+Every major tool and dashboard feature has its own explicit URL path:
+- `/` — Public Landing Page
+- `/dashboard` — Rank Analytics Dashboard
+- `/tools` — Standalone SEO Tools Suite
+- `/tools/meta-preview` — Meta & SERP Snippet Previewer
+- `/tools/keyword-density` — Keyword Density Checker
+- `/tools/sitemap-validator` — Sitemap XML Validator
+- `/profile` — User Account Profile & Settings
+- `/admin` — Server-Gated Admin Console (`ashishkushwaha88643@gmail.com`)
+
+### 5. Server-Side Free vs. Premium Tier Enforcement
 - **Free Tier**:
   - Max 1 connected website
   - Top 10 tracked queries visible

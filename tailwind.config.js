@@ -15,18 +15,16 @@ export default {
           600: '#059669',
           700: '#047857',
           900: '#064e3b',
-          accent: '#3b82f6',
-          purple: '#8b5cf6',
+          accent: '#2563eb',
+          purple: '#7c3aed',
         },
-        dark: {
-          bg: '#0b0f19',
-          card: '#111827',
-          border: '#1f2937',
-          hover: '#1e293b',
-        }
       },
       fontFamily: {
-        sans: ['Inter', 'system-ui', 'sans-serif'],
+        sans: ['"Plus Jakarta Sans"', 'Inter', 'system-ui', 'sans-serif'],
+      },
+      boxShadow: {
+        glass: '0 8px 32px 0 rgba(31, 38, 135, 0.07)',
+        'glass-hover': '0 12px 40px 0 rgba(31, 38, 135, 0.12)',
       }
     },
   },

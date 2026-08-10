@@ -3,7 +3,7 @@ import { useAuth } from '../context/AuthContext';
 import { ConnectedSite, SiteAnalyticsResponse } from '../types';
 import { fetchConnectedSites, connectSite, fetchSiteAnalytics, fetchSiteSitemap } from '../services/api';
 import { AreaChart, Area, XAxis, YAxis, Tooltip, ResponsiveContainer, CartesianGrid } from 'recharts';
-import { Plus, Lock, Globe, Search, RefreshCw, AlertTriangle, ExternalLink, Calendar, ChevronDown, CheckCircle, Info, Sparkles, Filter, FileText, Smartphone } from 'lucide-react';
+import { Plus, Lock, Globe, Search, RefreshCw, AlertTriangle, ChevronDown, CheckCircle, Smartphone, Sparkles, FileText } from 'lucide-react';
 
 export const DashboardPage: React.FC = () => {
   const { user, openUpgradeModal } = useAuth();
@@ -39,7 +39,6 @@ export const DashboardPage: React.FC = () => {
       if (data.connectedSites && data.connectedSites.length > 0) {
         setSelectedSite(data.connectedSites[0]);
       } else if (data.gscVerifiedSites && data.gscVerifiedSites.length > 0) {
-        // Fallback site selection
         const fallbackSite = {
           id: 'gsc_site_0',
           site_url: data.gscVerifiedSites[0].siteUrl,
@@ -111,16 +110,16 @@ export const DashboardPage: React.FC = () => {
     <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8 space-y-6">
       
       {/* Top Header Bar */}
-      <div className="flex flex-col md:flex-row md:items-center justify-between gap-4 bg-gray-900/60 p-4 sm:p-6 rounded-2xl border border-gray-800">
+      <div className="glass-card p-4 sm:p-6 rounded-3xl flex flex-col md:flex-row md:items-center justify-between gap-4">
         
         {/* Site Selector */}
         <div className="flex items-center gap-3">
-          <div className="p-3 bg-emerald-500/10 border border-emerald-500/30 rounded-xl text-emerald-400">
+          <div className="p-3 bg-emerald-50 border border-emerald-200/80 rounded-2xl text-emerald-600 shadow-sm">
             <Globe className="w-6 h-6" />
           </div>
 
           <div>
-            <span className="text-[11px] font-semibold text-gray-400 uppercase tracking-wider">Connected Search Console Property</span>
+            <span className="text-[11px] font-semibold text-slate-500 uppercase tracking-wider">Connected Search Console Property</span>
             <div className="flex items-center gap-2 mt-0.5">
               {sites.length > 0 ? (
                 <div className="relative">
@@ -130,23 +129,23 @@ export const DashboardPage: React.FC = () => {
                       const found = sites.find(s => s.site_url === e.target.value);
                       if (found) setSelectedSite(found);
                     }}
-                    className="bg-[#0b0f19] border border-gray-700 text-white font-bold text-base rounded-xl px-3 py-1.5 pr-8 appearance-none focus:outline-none focus:border-emerald-500 cursor-pointer"
+                    className="glass-input text-slate-900 font-bold text-base rounded-2xl px-3.5 py-1.5 pr-8 appearance-none focus:outline-none cursor-pointer"
                   >
                     {sites.map(s => (
                       <option key={s.id} value={s.site_url}>{s.site_url}</option>
                     ))}
                   </select>
-                  <ChevronDown className="w-4 h-4 text-gray-400 absolute right-2.5 top-1/2 -translate-y-1/2 pointer-events-none" />
+                  <ChevronDown className="w-4 h-4 text-slate-400 absolute right-3 top-1/2 -translate-y-1/2 pointer-events-none" />
                 </div>
               ) : (
-                <span className="text-sm font-bold text-white">
+                <span className="text-sm font-bold text-slate-900">
                   {selectedSite?.site_url || 'No Website Connected'}
                 </span>
               )}
 
               <button
                 onClick={() => setIsAddSiteModalOpen(true)}
-                className="px-3 py-1.5 rounded-xl bg-emerald-500/10 border border-emerald-500/30 hover:bg-emerald-500/20 text-emerald-400 text-xs font-semibold flex items-center gap-1 transition"
+                className="px-3 py-1.5 rounded-xl bg-emerald-50 border border-emerald-200 hover:bg-emerald-100 text-emerald-700 text-xs font-bold flex items-center gap-1 transition shadow-sm"
               >
                 <Plus className="w-3.5 h-3.5" />
                 <span>Add Site</span>
@@ -157,7 +156,7 @@ export const DashboardPage: React.FC = () => {
 
         {/* Date Filter & Refresh */}
         <div className="flex items-center gap-2 flex-wrap">
-          <div className="flex items-center bg-[#0b0f19] p-1 rounded-xl border border-gray-800 text-xs">
+          <div className="flex items-center glass-card p-1 rounded-2xl text-xs">
             {[7, 28, 90, 480].map((d) => {
               const isLocked = user?.plan === 'free' && d > 28;
               return (
@@ -170,14 +169,14 @@ export const DashboardPage: React.FC = () => {
                       setDays(d);
                     }
                   }}
-                  className={`px-3 py-1.5 rounded-lg font-medium flex items-center gap-1 transition ${
+                  className={`px-3 py-1.5 rounded-xl font-bold flex items-center gap-1 transition ${
                     days === d
-                      ? 'bg-emerald-500/20 text-emerald-300 font-bold border border-emerald-500/40'
-                      : 'text-gray-400 hover:text-white'
+                      ? 'bg-emerald-500 text-white shadow-md shadow-emerald-500/20'
+                      : 'text-slate-600 hover:text-slate-900 hover:bg-slate-100/80'
                   }`}
                 >
                   <span>{d === 480 ? '16 Months' : `${d} Days`}</span>
-                  {isLocked && <Lock className="w-3 h-3 text-amber-400" />}
+                  {isLocked && <Lock className="w-3 h-3 text-amber-500" />}
                 </button>
               );
             })}
@@ -186,10 +185,10 @@ export const DashboardPage: React.FC = () => {
           <button
             onClick={() => selectedSite && fetchSiteAnalytics(selectedSite.id || selectedSite.site_url, days).then(setAnalytics)}
             disabled={loading}
-            className="p-2.5 rounded-xl bg-gray-800 hover:bg-gray-700 text-gray-300 transition"
+            className="p-2.5 rounded-2xl glass-button text-slate-600 hover:text-emerald-600 transition"
             title="Refresh GSC Data"
           >
-            <RefreshCw className={`w-4 h-4 ${loading ? 'animate-spin text-emerald-400' : ''}`} />
+            <RefreshCw className={`w-4 h-4 ${loading ? 'animate-spin text-emerald-600' : ''}`} />
           </button>
         </div>
 
@@ -197,16 +196,16 @@ export const DashboardPage: React.FC = () => {
 
       {/* Free Tier Notice Banner */}
       {user?.plan === 'free' && (
-        <div className="p-4 rounded-xl bg-gradient-to-r from-amber-950/40 via-gray-900 to-gray-900 border border-amber-500/30 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3 text-xs">
-          <div className="flex items-center gap-2.5 text-amber-200">
-            <Lock className="w-4 h-4 text-amber-400 shrink-0" />
+        <div className="p-4 rounded-2xl bg-amber-50/80 border border-amber-200 text-slate-800 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3 text-xs shadow-sm">
+          <div className="flex items-center gap-2.5 text-amber-900 font-medium">
+            <Lock className="w-4 h-4 text-amber-600 shrink-0" />
             <span>
               <strong>Free Plan Enforced:</strong> Showing top 10 tracked queries & 28-day history for 1 site.
             </span>
           </div>
           <button
             onClick={openUpgradeModal}
-            className="px-3 py-1.5 bg-gradient-to-r from-amber-500 to-emerald-500 text-slate-950 font-bold rounded-lg hover:brightness-110 transition shrink-0 flex items-center gap-1"
+            className="px-3.5 py-1.5 bg-gradient-to-r from-amber-500 to-emerald-500 text-slate-950 font-extrabold rounded-xl hover:brightness-105 transition shrink-0 flex items-center gap-1 shadow-sm"
           >
             <Sparkles className="w-3.5 h-3.5 fill-slate-950" />
             <span>Unlock Full 16-Month Rankings</span>
@@ -216,8 +215,8 @@ export const DashboardPage: React.FC = () => {
 
       {/* Error Notice */}
       {error && (
-        <div className="p-4 bg-rose-500/10 border border-rose-500/30 rounded-xl text-rose-300 text-xs flex items-center gap-2">
-          <AlertTriangle className="w-4 h-4 text-rose-400 shrink-0" />
+        <div className="p-4 bg-rose-50 border border-rose-200 rounded-2xl text-rose-800 text-xs flex items-center gap-2">
+          <AlertTriangle className="w-4 h-4 text-rose-600 shrink-0" />
           <span>{error}</span>
         </div>
       )}
@@ -225,126 +224,126 @@ export const DashboardPage: React.FC = () => {
       {/* Analytics Summary Metric Cards */}
       <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
         
-        <div className="p-5 bg-gray-900/60 border border-gray-800 rounded-2xl relative overflow-hidden group">
-          <div className="text-xs text-gray-400 font-medium">Total Clicks</div>
-          <div className="text-3xl font-extrabold text-white mt-2 font-mono">
+        <div className="p-5 glass-card glass-card-hover rounded-3xl relative overflow-hidden">
+          <div className="text-xs text-slate-500 font-semibold">Total Clicks</div>
+          <div className="text-3xl font-extrabold text-slate-900 mt-2 font-mono">
             {loading ? '...' : analytics?.summary.totalClicks.toLocaleString() || '0'}
           </div>
-          <p className="text-[11px] text-emerald-400 mt-1 font-medium">Google Search Clicks</p>
+          <p className="text-[11px] text-emerald-600 mt-1 font-bold">Google Search Clicks</p>
         </div>
 
-        <div className="p-5 bg-gray-900/60 border border-gray-800 rounded-2xl relative overflow-hidden group">
-          <div className="text-xs text-gray-400 font-medium">Total Impressions</div>
-          <div className="text-3xl font-extrabold text-white mt-2 font-mono">
+        <div className="p-5 glass-card glass-card-hover rounded-3xl relative overflow-hidden">
+          <div className="text-xs text-slate-500 font-semibold">Total Impressions</div>
+          <div className="text-3xl font-extrabold text-slate-900 mt-2 font-mono">
             {loading ? '...' : analytics?.summary.totalImpressions.toLocaleString() || '0'}
           </div>
-          <p className="text-[11px] text-emerald-400 mt-1 font-medium">SERP Impressions</p>
+          <p className="text-[11px] text-emerald-600 mt-1 font-bold">SERP Impressions</p>
         </div>
 
-        <div className="p-5 bg-gray-900/60 border border-gray-800 rounded-2xl relative overflow-hidden group">
-          <div className="text-xs text-gray-400 font-medium">Average CTR</div>
-          <div className="text-3xl font-extrabold text-white mt-2 font-mono">
+        <div className="p-5 glass-card glass-card-hover rounded-3xl relative overflow-hidden">
+          <div className="text-xs text-slate-500 font-semibold">Average CTR</div>
+          <div className="text-3xl font-extrabold text-slate-900 mt-2 font-mono">
             {loading ? '...' : `${analytics?.summary.avgCtr || '0'}%`}
           </div>
-          <p className="text-[11px] text-emerald-400 mt-1 font-medium">Click-Through Rate</p>
+          <p className="text-[11px] text-emerald-600 mt-1 font-bold">Click-Through Rate</p>
         </div>
 
-        <div className="p-5 bg-gray-900/60 border border-gray-800 rounded-2xl relative overflow-hidden group">
-          <div className="text-xs text-gray-400 font-medium">Average Rank Position</div>
-          <div className="text-3xl font-extrabold text-emerald-400 mt-2 font-mono">
+        <div className="p-5 glass-card glass-card-hover rounded-3xl relative overflow-hidden">
+          <div className="text-xs text-slate-500 font-semibold">Average Rank Position</div>
+          <div className="text-3xl font-extrabold text-emerald-600 mt-2 font-mono">
             {loading ? '...' : `#${analytics?.summary.avgPosition || '0'}`}
           </div>
-          <p className="text-[11px] text-gray-400 mt-1 font-medium">Google Search Position</p>
+          <p className="text-[11px] text-slate-500 mt-1 font-semibold">Google Search Position</p>
         </div>
 
       </div>
 
       {/* Recharts Historical Trend Line */}
-      <div className="p-6 bg-gray-900/60 border border-gray-800 rounded-2xl">
-        <div className="flex justify-between items-center mb-4">
+      <div className="p-6 glass-card rounded-3xl space-y-4">
+        <div className="flex justify-between items-center">
           <div>
-            <h3 className="text-base font-bold text-white">Search Performance Over Time</h3>
-            <p className="text-xs text-gray-400">Daily clicks and impression trends from Google Search Console</p>
+            <h3 className="text-base font-bold text-slate-900">Search Performance Over Time</h3>
+            <p className="text-xs text-slate-500">Daily clicks and impression trends from Google Search Console</p>
           </div>
-          <span className="text-xs px-2.5 py-1 rounded-full bg-gray-800 text-gray-400 font-mono">
+          <span className="text-xs px-3 py-1 rounded-full bg-slate-100 text-slate-600 font-mono font-bold">
             {analytics?.trend.length || 0} Data Points
           </span>
         </div>
 
         <div className="h-64 w-full">
           {loading ? (
-            <div className="h-full flex items-center justify-center text-xs text-gray-500">Loading trend chart...</div>
+            <div className="h-full flex items-center justify-center text-xs text-slate-400">Loading trend chart...</div>
           ) : analytics?.trend && analytics.trend.length > 0 ? (
             <ResponsiveContainer width="100%" height="100%">
               <AreaChart data={analytics.trend} margin={{ top: 10, right: 10, left: -20, bottom: 0 }}>
                 <defs>
-                  <linearGradient id="clicksGrad" x1="0" y1="0" x2="0" y2="1">
-                    <stop offset="5%" stopColor="#10b981" stopOpacity={0.4} />
+                  <linearGradient id="clicksGradLight" x1="0" y1="0" x2="0" y2="1">
+                    <stop offset="5%" stopColor="#10b981" stopOpacity={0.35} />
                     <stop offset="95%" stopColor="#10b981" stopOpacity={0.0} />
                   </linearGradient>
                 </defs>
-                <CartesianGrid strokeDasharray="3 3" stroke="#1f2937" />
-                <XAxis dataKey="date" stroke="#6b7280" fontSize={10} tickLine={false} />
-                <YAxis stroke="#6b7280" fontSize={10} tickLine={false} />
+                <CartesianGrid strokeDasharray="3 3" stroke="#e2e8f0" />
+                <XAxis dataKey="date" stroke="#94a3b8" fontSize={10} tickLine={false} />
+                <YAxis stroke="#94a3b8" fontSize={10} tickLine={false} />
                 <Tooltip
-                  contentStyle={{ backgroundColor: '#111827', borderColor: '#374151', borderRadius: '12px', fontSize: '12px' }}
-                  labelStyle={{ color: '#9ca3af', fontWeight: 'bold' }}
+                  contentStyle={{ backgroundColor: '#ffffff', borderColor: '#e2e8f0', borderRadius: '14px', fontSize: '12px', boxShadow: '0 10px 25px -5px rgba(0,0,0,0.1)' }}
+                  labelStyle={{ color: '#475569', fontWeight: 'bold' }}
                 />
-                <Area type="monotone" dataKey="clicks" name="Clicks" stroke="#10b981" strokeWidth={2.5} fillOpacity={1} fill="url(#clicksGrad)" />
+                <Area type="monotone" dataKey="clicks" name="Clicks" stroke="#10b981" strokeWidth={2.5} fillOpacity={1} fill="url(#clicksGradLight)" />
               </AreaChart>
             </ResponsiveContainer>
           ) : (
-            <div className="h-full flex items-center justify-center text-xs text-gray-500">No daily trend data available for this range.</div>
+            <div className="h-full flex items-center justify-center text-xs text-slate-400">No daily trend data available for this range.</div>
           )}
         </div>
       </div>
 
       {/* Main Breakdown Section (Queries / Pages / Sitemap Status) */}
-      <div className="p-6 bg-gray-900/60 border border-gray-800 rounded-2xl">
+      <div className="p-6 glass-card rounded-3xl space-y-6">
         
         {/* Navigation Tabs */}
-        <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 mb-6 pb-4 border-b border-gray-800">
-          <div className="flex items-center gap-2 bg-[#0b0f19] p-1 rounded-xl border border-gray-800">
+        <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 pb-4 border-b border-slate-200/80">
+          <div className="flex items-center gap-2 bg-slate-100/80 p-1.5 rounded-2xl border border-slate-200/80">
             <button
               onClick={() => setActiveTab('queries')}
-              className={`px-4 py-2 rounded-lg text-xs font-bold transition flex items-center gap-2 ${
-                activeTab === 'queries' ? 'bg-emerald-500/20 text-emerald-400 border border-emerald-500/40' : 'text-gray-400 hover:text-white'
+              className={`px-4 py-2 rounded-xl text-xs font-bold transition flex items-center gap-2 ${
+                activeTab === 'queries' ? 'bg-white text-slate-900 shadow-sm' : 'text-slate-600 hover:text-slate-900'
               }`}
             >
-              <Search className="w-3.5 h-3.5" />
+              <Search className="w-3.5 h-3.5 text-emerald-600" />
               <span>Search Queries ({analytics?.queries.length || 0})</span>
             </button>
 
             <button
               onClick={() => setActiveTab('pages')}
-              className={`px-4 py-2 rounded-lg text-xs font-bold transition flex items-center gap-2 ${
-                activeTab === 'pages' ? 'bg-emerald-500/20 text-emerald-400 border border-emerald-500/40' : 'text-gray-400 hover:text-white'
+              className={`px-4 py-2 rounded-xl text-xs font-bold transition flex items-center gap-2 ${
+                activeTab === 'pages' ? 'bg-white text-slate-900 shadow-sm' : 'text-slate-600 hover:text-slate-900'
               }`}
             >
-              <FileText className="w-3.5 h-3.5" />
+              <FileText className="w-3.5 h-3.5 text-emerald-600" />
               <span>Top Pages ({analytics?.pages.length || 0})</span>
             </button>
 
             <button
               onClick={() => setActiveTab('sitemap')}
-              className={`px-4 py-2 rounded-lg text-xs font-bold transition flex items-center gap-2 ${
-                activeTab === 'sitemap' ? 'bg-emerald-500/20 text-emerald-400 border border-emerald-500/40' : 'text-gray-400 hover:text-white'
+              className={`px-4 py-2 rounded-xl text-xs font-bold transition flex items-center gap-2 ${
+                activeTab === 'sitemap' ? 'bg-white text-slate-900 shadow-sm' : 'text-slate-600 hover:text-slate-900'
               }`}
             >
-              <Smartphone className="w-3.5 h-3.5" />
+              <Smartphone className="w-3.5 h-3.5 text-emerald-600" />
               <span>Indexing & Sitemap</span>
             </button>
           </div>
 
           {activeTab === 'queries' && (
             <div className="relative">
-              <Search className="w-4 h-4 text-gray-500 absolute left-3 top-1/2 -translate-y-1/2" />
+              <Search className="w-4 h-4 text-slate-400 absolute left-3 top-1/2 -translate-y-1/2" />
               <input
                 type="text"
                 placeholder="Filter search queries..."
                 value={searchQueryFilter}
                 onChange={(e) => setSearchQueryFilter(e.target.value)}
-                className="bg-[#0b0f19] border border-gray-700 text-white text-xs rounded-xl pl-9 pr-4 py-2 w-full sm:w-64 focus:outline-none focus:border-emerald-500"
+                className="glass-input text-slate-900 text-xs rounded-xl pl-9 pr-4 py-2 w-full sm:w-64 focus:outline-none"
               />
             </div>
           )}
@@ -353,26 +352,26 @@ export const DashboardPage: React.FC = () => {
         {/* Tab 1: Queries Table */}
         {activeTab === 'queries' && (
           <div className="overflow-x-auto">
-            <table className="w-full text-left text-xs text-gray-300">
-              <thead className="bg-[#0b0f19] text-gray-400 uppercase font-semibold text-[10px] tracking-wider">
+            <table className="w-full text-left text-xs text-slate-700">
+              <thead className="bg-slate-100/70 text-slate-500 uppercase font-bold text-[10px] tracking-wider">
                 <tr>
-                  <th className="p-3 rounded-l-xl">Query</th>
+                  <th className="p-3 rounded-l-xl">Query Keyword</th>
                   <th className="p-3 text-right">Clicks</th>
                   <th className="p-3 text-right">Impressions</th>
                   <th className="p-3 text-right">CTR</th>
                   <th className="p-3 text-right rounded-r-xl">Avg Position</th>
                 </tr>
               </thead>
-              <tbody className="divide-y divide-gray-800/60">
+              <tbody className="divide-y divide-slate-200/60">
                 {filteredQueries.map((row, idx) => (
-                  <tr key={idx} className="hover:bg-gray-800/40 transition">
-                    <td className="p-3 font-semibold text-emerald-300 flex items-center gap-2">
+                  <tr key={idx} className="hover:bg-slate-100/50 transition">
+                    <td className="p-3 font-bold text-slate-900 flex items-center gap-2">
                       <span>{row.query}</span>
                     </td>
-                    <td className="p-3 text-right font-mono font-medium">{row.clicks}</td>
-                    <td className="p-3 text-right font-mono text-gray-400">{row.impressions}</td>
-                    <td className="p-3 text-right font-mono text-gray-300">{row.ctr}%</td>
-                    <td className="p-3 text-right font-mono text-emerald-400 font-bold">#{row.position}</td>
+                    <td className="p-3 text-right font-mono font-bold text-slate-900">{row.clicks}</td>
+                    <td className="p-3 text-right font-mono text-slate-500">{row.impressions}</td>
+                    <td className="p-3 text-right font-mono text-slate-700">{row.ctr}%</td>
+                    <td className="p-3 text-right font-mono text-emerald-600 font-extrabold">#{row.position}</td>
                   </tr>
                 ))}
               </tbody>
@@ -380,14 +379,14 @@ export const DashboardPage: React.FC = () => {
 
             {/* Truncated Notice for Free Users */}
             {user?.plan === 'free' && analytics?.isQueryListTruncated && (
-              <div className="mt-4 p-4 rounded-xl bg-gray-950/80 border border-dashed border-gray-700 text-center flex flex-col items-center justify-center gap-2">
-                <div className="flex items-center gap-2 text-amber-300 font-semibold text-xs">
-                  <Lock className="w-4 h-4 text-amber-400" />
+              <div className="mt-4 p-4 rounded-2xl bg-amber-50/60 border border-dashed border-amber-200 text-center flex flex-col items-center justify-center gap-2">
+                <div className="flex items-center gap-2 text-amber-900 font-bold text-xs">
+                  <Lock className="w-4 h-4 text-amber-600" />
                   <span>Remaining 490+ Ranked Queries Truncated by Free Plan</span>
                 </div>
                 <button
                   onClick={openUpgradeModal}
-                  className="px-4 py-2 bg-gradient-to-r from-emerald-500 to-teal-500 text-white font-bold text-xs rounded-xl shadow transition"
+                  className="px-4 py-2 bg-gradient-to-r from-emerald-500 to-teal-600 text-white font-bold text-xs rounded-xl shadow-md transition"
                 >
                   Upgrade to Premium to View All Keywords
                 </button>
@@ -399,8 +398,8 @@ export const DashboardPage: React.FC = () => {
         {/* Tab 2: Pages Table */}
         {activeTab === 'pages' && (
           <div className="overflow-x-auto">
-            <table className="w-full text-left text-xs text-gray-300">
-              <thead className="bg-[#0b0f19] text-gray-400 uppercase font-semibold text-[10px] tracking-wider">
+            <table className="w-full text-left text-xs text-slate-700">
+              <thead className="bg-slate-100/70 text-slate-500 uppercase font-bold text-[10px] tracking-wider">
                 <tr>
                   <th className="p-3 rounded-l-xl">Landing Page URL</th>
                   <th className="p-3 text-right">Clicks</th>
@@ -409,14 +408,14 @@ export const DashboardPage: React.FC = () => {
                   <th className="p-3 text-right rounded-r-xl">Avg Position</th>
                 </tr>
               </thead>
-              <tbody className="divide-y divide-gray-800/60">
+              <tbody className="divide-y divide-slate-200/60">
                 {(analytics?.pages || []).map((row, idx) => (
-                  <tr key={idx} className="hover:bg-gray-800/40 transition">
-                    <td className="p-3 font-mono text-gray-200 truncate max-w-md">{row.page}</td>
-                    <td className="p-3 text-right font-mono font-medium">{row.clicks}</td>
-                    <td className="p-3 text-right font-mono text-gray-400">{row.impressions}</td>
-                    <td className="p-3 text-right font-mono text-gray-300">{row.ctr}%</td>
-                    <td className="p-3 text-right font-mono text-emerald-400 font-bold">#{row.position}</td>
+                  <tr key={idx} className="hover:bg-slate-100/50 transition">
+                    <td className="p-3 font-mono text-slate-900 truncate max-w-md">{row.page}</td>
+                    <td className="p-3 text-right font-mono font-bold text-slate-900">{row.clicks}</td>
+                    <td className="p-3 text-right font-mono text-slate-500">{row.impressions}</td>
+                    <td className="p-3 text-right font-mono text-slate-700">{row.ctr}%</td>
+                    <td className="p-3 text-right font-mono text-emerald-600 font-extrabold">#{row.position}</td>
                   </tr>
                 ))}
               </tbody>
@@ -428,30 +427,30 @@ export const DashboardPage: React.FC = () => {
         {activeTab === 'sitemap' && (
           <div className="space-y-4">
             <div className="grid md:grid-cols-2 gap-4">
-              <div className="p-4 bg-gray-950/80 rounded-xl border border-gray-800">
-                <h4 className="font-bold text-white text-sm mb-2 flex items-center gap-2">
-                  <CheckCircle className="w-4 h-4 text-emerald-400" />
+              <div className="p-4 bg-white rounded-2xl border border-slate-200/80 shadow-sm">
+                <h4 className="font-bold text-slate-900 text-sm mb-2 flex items-center gap-2">
+                  <CheckCircle className="w-4 h-4 text-emerald-600" />
                   <span>Sitemap Status (Google Search Console)</span>
                 </h4>
                 {sitemapData?.sitemaps && sitemapData.sitemaps.length > 0 ? (
-                  <div className="space-y-2 text-xs text-gray-300">
-                    <div><strong>Path:</strong> <code className="text-emerald-300">{sitemapData.sitemaps[0].path}</code></div>
+                  <div className="space-y-2 text-xs text-slate-600">
+                    <div><strong>Path:</strong> <code className="text-emerald-700 font-mono">{sitemapData.sitemaps[0].path}</code></div>
                     <div><strong>Last Downloaded:</strong> {new Date(sitemapData.sitemaps[0].lastDownloaded || Date.now()).toLocaleDateString()}</div>
                     <div><strong>Submitted Pages:</strong> {sitemapData.sitemaps[0].contents?.[0]?.submitted || 142}</div>
-                    <div><strong>Indexed Pages:</strong> <span className="text-emerald-400 font-bold">{sitemapData.sitemaps[0].contents?.[0]?.indexed || 138}</span></div>
+                    <div><strong>Indexed Pages:</strong> <span className="text-emerald-600 font-bold">{sitemapData.sitemaps[0].contents?.[0]?.indexed || 138}</span></div>
                   </div>
                 ) : (
-                  <p className="text-xs text-gray-500">No sitemap found in Google Search Console.</p>
+                  <p className="text-xs text-slate-400">No sitemap found in Google Search Console.</p>
                 )}
               </div>
 
-              <div className="p-4 bg-gray-950/80 rounded-xl border border-gray-800">
-                <h4 className="font-bold text-white text-sm mb-2 flex items-center gap-2">
-                  <Smartphone className="w-4 h-4 text-emerald-400" />
+              <div className="p-4 bg-white rounded-2xl border border-slate-200/80 shadow-sm">
+                <h4 className="font-bold text-slate-900 text-sm mb-2 flex items-center gap-2">
+                  <Smartphone className="w-4 h-4 text-emerald-600" />
                   <span>Mobile Usability Status</span>
                 </h4>
-                <div className="space-y-2 text-xs text-gray-300">
-                  <div><strong>Mobile Status:</strong> <span className="px-2 py-0.5 rounded bg-emerald-500/20 text-emerald-400 font-bold uppercase">PASSING</span></div>
+                <div className="space-y-2 text-xs text-slate-600">
+                  <div><strong>Mobile Status:</strong> <span className="px-2 py-0.5 rounded bg-emerald-100 text-emerald-800 font-bold uppercase text-[10px]">PASSING</span></div>
                   <div><strong>Issues Detected:</strong> 0</div>
                   <div><strong>Checked Date:</strong> {new Date().toLocaleDateString()}</div>
                 </div>
@@ -464,16 +463,16 @@ export const DashboardPage: React.FC = () => {
 
       {/* Add Connected Site Modal */}
       {isAddSiteModalOpen && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/75 backdrop-blur-md">
-          <div className="w-full max-w-lg bg-[#111827] border border-gray-800 rounded-2xl p-6 shadow-2xl">
-            <h3 className="text-xl font-bold text-white mb-2">Connect Website Property</h3>
-            <p className="text-xs text-gray-400 mb-4">
+        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-slate-900/40 backdrop-blur-md">
+          <div className="w-full max-w-lg glass-modal rounded-3xl p-6 shadow-2xl">
+            <h3 className="text-xl font-bold text-slate-900 mb-2">Connect Website Property</h3>
+            <p className="text-xs text-slate-500 mb-4">
               Select a verified domain from your Google Search Console account or enter your site URL.
             </p>
 
             {addSiteError && (
-              <div className="mb-4 p-3 bg-rose-500/10 border border-rose-500/30 text-rose-300 rounded-xl text-xs flex items-center gap-2">
-                <AlertTriangle className="w-4 h-4 text-rose-400 shrink-0" />
+              <div className="mb-4 p-3 bg-rose-50 border border-rose-200 text-rose-700 rounded-xl text-xs flex items-center gap-2">
+                <AlertTriangle className="w-4 h-4 text-rose-600 shrink-0" />
                 <span>{addSiteError}</span>
               </div>
             )}
@@ -481,16 +480,16 @@ export const DashboardPage: React.FC = () => {
             {/* List GSC Verified Sites */}
             {gscVerifiedSites.length > 0 && (
               <div className="mb-4">
-                <label className="text-xs text-gray-400 font-semibold mb-2 block">Verified Google Search Console Properties:</label>
+                <label className="text-xs text-slate-500 font-semibold mb-2 block">Verified Google Search Console Properties:</label>
                 <div className="space-y-1.5 max-h-40 overflow-y-auto pr-1">
                   {gscVerifiedSites.map((s, idx) => (
                     <div
                       key={idx}
                       onClick={() => handleAddSite(s.siteUrl)}
-                      className="p-2.5 rounded-xl bg-gray-900 hover:bg-emerald-950/40 border border-gray-800 hover:border-emerald-500/50 cursor-pointer flex justify-between items-center transition"
+                      className="p-2.5 rounded-xl bg-white hover:bg-emerald-50/60 border border-slate-200 hover:border-emerald-300 cursor-pointer flex justify-between items-center transition"
                     >
-                      <span className="text-xs font-semibold text-gray-200">{s.siteUrl}</span>
-                      <span className="text-[10px] px-2 py-0.5 bg-emerald-500/10 text-emerald-400 rounded-md font-mono">{s.permissionLevel}</span>
+                      <span className="text-xs font-bold text-slate-800">{s.siteUrl}</span>
+                      <span className="text-[10px] px-2 py-0.5 bg-emerald-100 text-emerald-800 rounded-md font-mono">{s.permissionLevel}</span>
                     </div>
                   ))}
                 </div>
@@ -498,27 +497,27 @@ export const DashboardPage: React.FC = () => {
             )}
 
             <div className="mb-6">
-              <label className="text-xs text-gray-400 font-semibold mb-1 block">Or enter exact site URL:</label>
+              <label className="text-xs text-slate-500 font-semibold mb-1 block">Or enter exact site URL:</label>
               <input
                 type="url"
                 placeholder="https://yourwebsite.com"
                 value={customSiteInput}
                 onChange={(e) => setCustomSiteInput(e.target.value)}
-                className="w-full bg-[#0b0f19] border border-gray-700 text-white text-xs rounded-xl px-3 py-2.5 focus:outline-none focus:border-emerald-500"
+                className="w-full glass-input text-slate-900 text-xs rounded-xl px-3 py-2.5 focus:outline-none"
               />
             </div>
 
             <div className="flex justify-end gap-3">
               <button
                 onClick={() => setIsAddSiteModalOpen(false)}
-                className="px-4 py-2 rounded-xl border border-gray-700 text-gray-300 text-xs font-medium hover:bg-gray-800 transition"
+                className="px-4 py-2 rounded-xl glass-button text-slate-700 text-xs font-semibold"
               >
                 Cancel
               </button>
               <button
                 onClick={() => handleAddSite(customSiteInput)}
                 disabled={addSiteLoading || !customSiteInput.trim()}
-                className="px-5 py-2 rounded-xl bg-emerald-500 hover:bg-emerald-400 text-slate-950 font-bold text-xs transition disabled:opacity-50"
+                className="px-5 py-2 rounded-xl bg-emerald-500 hover:bg-emerald-600 text-white font-bold text-xs shadow-md transition disabled:opacity-50"
               >
                 {addSiteLoading ? 'Verifying...' : 'Connect Site'}
               </button>

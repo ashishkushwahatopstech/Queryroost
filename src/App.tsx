@@ -7,48 +7,64 @@ import { LandingPage } from './pages/LandingPage';
 import { DashboardPage } from './pages/DashboardPage';
 import { ToolsPage } from './pages/ToolsPage';
 import { AdminPage } from './pages/AdminPage';
+import { ProfilePage } from './pages/ProfilePage';
 import { AuthCallbackPage } from './pages/AuthCallbackPage';
 
 const AppContent: React.FC = () => {
-  const { user, loading } = useAuth();
-  const [activeTab, setActiveTab] = useState<'landing' | 'dashboard' | 'tools' | 'admin'>('landing');
+  const { user } = useAuth();
+  const [currentPath, setCurrentPath] = useState<string>(window.location.pathname);
 
-  // Handle URL path client routing
+  // Sync state with browser location changes & history popstate
   useEffect(() => {
-    const path = window.location.pathname;
-    if (path.includes('/dashboard')) {
-      setActiveTab('dashboard');
-    } else if (path.includes('/tools')) {
-      setActiveTab('tools');
-    } else if (path.includes('/admin')) {
-      setActiveTab('admin');
-    } else if (user) {
-      setActiveTab('dashboard');
-    }
-  }, [user]);
+    const handlePopState = () => {
+      setCurrentPath(window.location.pathname);
+    };
+    window.addEventListener('popstate', handlePopState);
+    return () => window.removeEventListener('popstate', handlePopState);
+  }, []);
 
-  if (window.location.pathname.includes('/auth/callback')) {
+  const navigate = (path: string) => {
+    window.history.pushState({}, '', path);
+    setCurrentPath(path);
+  };
+
+  if (currentPath.includes('/auth/callback')) {
     return <AuthCallbackPage />;
   }
 
+  const isLandingPath = currentPath === '/' || currentPath === '';
+  const isDashboardPath = currentPath === '/dashboard';
+  const isToolsPath = currentPath.startsWith('/tools');
+  const isProfilePath = currentPath === '/profile';
+  const isAdminPath = currentPath === '/admin';
+
   return (
-    <div className="min-h-screen flex flex-col bg-[#0b0f19] text-gray-100 selection:bg-emerald-500 selection:text-white">
-      <Navbar activeTab={activeTab} setActiveTab={setActiveTab} />
+    <div className="min-h-screen flex flex-col bg-slate-50 text-slate-900 selection:bg-emerald-500 selection:text-white">
+      <Navbar currentPath={currentPath} navigate={navigate} />
       
       <main className="flex-1">
-        {activeTab === 'landing' && !user && (
-          <LandingPage onGoToDashboard={() => setActiveTab('dashboard')} />
+        {/* Landing Page */}
+        {(isLandingPath && !user) && (
+          <LandingPage onGoToDashboard={() => navigate('/dashboard')} />
         )}
 
-        {(activeTab === 'dashboard' || (activeTab === 'landing' && user)) && (
+        {/* Dashboard Page */}
+        {(isDashboardPath || (isLandingPath && user)) && (
           <DashboardPage />
         )}
 
-        {activeTab === 'tools' && (
-          <ToolsPage />
+        {/* Tools Page */}
+        {isToolsPath && (
+          <ToolsPage currentPath={currentPath} navigate={navigate} />
         )}
 
-        {activeTab === 'admin' && (
+        {/* Profile Page */}
+        {isProfilePath && (
+          <ProfilePage />
+        )}
+
+        {/* Admin Page */}
+        {isAdminPath && (
           <AdminPage />
         )}
       </main>
