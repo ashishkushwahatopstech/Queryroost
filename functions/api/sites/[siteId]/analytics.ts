@@ -1,4 +1,4 @@
-import { getUserFromSession } from '../../_auth';
+import { getUserFromSession, getValidAccessToken } from '../../_auth';
 
 export async function onRequestGet(context: { request: Request; env: any; params: any }) {
   const { request, env, params } = context;
@@ -36,12 +36,8 @@ export async function onRequestGet(context: { request: Request; env: any; params
     siteUrl = decodeURIComponent(siteId);
   }
 
-  // Fetch access_token for Google Search Console API
-  let accessToken = '';
-  if (db) {
-    const userRow = await db.prepare('SELECT access_token FROM users WHERE id = ?').bind(user.id).first();
-    accessToken = userRow?.access_token || '';
-  }
+  // Get valid Google Search Console access token (refreshed automatically if needed)
+  const accessToken = await getValidAccessToken(user.id, env);
 
   // Calculate start & end date for GSC API
   const endDateObj = new Date();
@@ -57,7 +53,7 @@ export async function onRequestGet(context: { request: Request; env: any; params
 
   if (accessToken && siteUrl) {
     try {
-      // 1. Query dimension performance (search queries)
+      // 1. Query dimension performance (real search queries from Google Search Console)
       const queryGscRes = await fetch(`https://www.googleapis.com/webmasters/v3/sites/${encodeURIComponent(siteUrl)}/searchAnalytics/query`, {
         method: 'POST',
         headers: {
@@ -161,11 +157,11 @@ export async function onRequestGet(context: { request: Request; env: any; params
         });
       }
     } catch (err) {
-      console.warn('GSC API fetch exception, returning structured mock data for fallback/demo');
+      console.warn('GSC API fetch exception, returning structured demo data for fallback');
     }
   }
 
-  // Fallback / Demonstration Data Generator (Used when GSC API has zero data or pending connection)
+  // Fallback / Demonstration Data Generator (Used when GSC API has zero data or pending site connection)
   const mockQueries = [
     { query: 'seo rank tracker free', clicks: 245, impressions: 3420, ctr: 7.16, position: 2.3 },
     { query: 'google search console analytics tool', clicks: 189, impressions: 2150, ctr: 8.79, position: 1.8 },
@@ -177,8 +173,6 @@ export async function onRequestGet(context: { request: Request; env: any; params
     { query: 'cloudflare pages seo analytics', clicks: 42, impressions: 720, ctr: 5.83, position: 6.1 },
     { query: 'search console API report generator', clicks: 38, impressions: 610, ctr: 6.23, position: 3.9 },
     { query: 'realtime GSC rank tracker', clicks: 29, impressions: 530, ctr: 5.47, position: 7.2 },
-    { query: 'premium seo tools bundle free', clicks: 24, impressions: 480, ctr: 5.00, position: 8.4 },
-    { query: 'website search audit dashboard', clicks: 19, impressions: 390, ctr: 4.87, position: 9.1 },
   ];
 
   const filteredQueries = user.plan === 'free' ? mockQueries.slice(0, 10) : mockQueries;
@@ -198,9 +192,9 @@ export async function onRequestGet(context: { request: Request; env: any; params
   }));
 
   const mockPages = [
-    { page: `${siteUrl || 'https://example.com'}/`, clicks: 420, impressions: 5800, ctr: 7.24, position: 2.1 },
-    { page: `${siteUrl || 'https://example.com'}/tools/meta-preview`, clicks: 180, impressions: 2400, ctr: 7.50, position: 3.4 },
-    { page: `${siteUrl || 'https://example.com'}/blog/seo-rank-tracking`, clicks: 110, impressions: 1600, ctr: 6.88, position: 4.2 },
+    { page: `${siteUrl || 'https://demo.aktechstudio.com'}/`, clicks: 420, impressions: 5800, ctr: 7.24, position: 2.1 },
+    { page: `${siteUrl || 'https://demo.aktechstudio.com'}/tools/meta-preview`, clicks: 180, impressions: 2400, ctr: 7.50, position: 3.4 },
+    { page: `${siteUrl || 'https://demo.aktechstudio.com'}/blog/seo-rank-tracking`, clicks: 110, impressions: 1600, ctr: 6.88, position: 4.2 },
   ];
 
   return new Response(JSON.stringify({

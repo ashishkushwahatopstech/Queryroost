@@ -1,4 +1,4 @@
-import { getUserFromSession } from '../_auth';
+import { getUserFromSession, getValidAccessToken } from '../_auth';
 
 export async function onRequestGet(context: { request: Request; env: any }) {
   const user = await getUserFromSession(context.request, context.env);
@@ -13,22 +13,21 @@ export async function onRequestGet(context: { request: Request; env: any }) {
     userSites = results || [];
   }
 
-  // Fetch access_token from D1 to get live verified sites from GSC
+  // Fetch valid access token to list real verified sites from Google Search Console
   let gscVerifiedSites: any[] = [];
-  if (db) {
-    const userRow = await db.prepare('SELECT access_token FROM users WHERE id = ?').bind(user.id).first();
-    if (userRow?.access_token) {
-      try {
-        const gscRes = await fetch('https://www.googleapis.com/webmasters/v3/sites', {
-          headers: { Authorization: `Bearer ${userRow.access_token}` }
-        });
-        if (gscRes.ok) {
-          const gscData: any = await gscRes.json();
-          gscVerifiedSites = gscData.siteEntry || [];
-        }
-      } catch (e) {
-        console.error('Error fetching GSC site entries:', e);
+  const accessToken = await getValidAccessToken(user.id, context.env);
+
+  if (accessToken) {
+    try {
+      const gscRes = await fetch('https://www.googleapis.com/webmasters/v3/sites', {
+        headers: { Authorization: `Bearer ${accessToken}` }
+      });
+      if (gscRes.ok) {
+        const gscData: any = await gscRes.json();
+        gscVerifiedSites = gscData.siteEntry || [];
       }
+    } catch (e) {
+      console.error('Error fetching GSC site entries:', e);
     }
   }
 
@@ -74,12 +73,13 @@ export async function onRequestPost(context: { request: Request; env: any }) {
   }
 
   // Verify ownership in GSC API
-  const userRow = await db.prepare('SELECT access_token FROM users WHERE id = ?').bind(user.id).first();
+  const accessToken = await getValidAccessToken(user.id, context.env);
   let permissionLevel = 'siteOwner';
-  if (userRow?.access_token) {
+
+  if (accessToken) {
     try {
       const gscRes = await fetch('https://www.googleapis.com/webmasters/v3/sites', {
-        headers: { Authorization: `Bearer ${userRow.access_token}` }
+        headers: { Authorization: `Bearer ${accessToken}` }
       });
       if (gscRes.ok) {
         const gscData: any = await gscRes.json();
