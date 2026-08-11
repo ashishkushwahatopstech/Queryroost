@@ -4,98 +4,86 @@
 
 @layer base {
   body {
-    @apply bg-slate-50 text-slate-900 font-sans antialiased min-h-screen;
-    font-feature-settings: "cv02", "cv03", "cv04", "cv11";
+    background-color: #ffffff;
+    color: #171717;
+    font-family: Geist, Inter, system-ui, -apple-system, sans-serif;
+    letter-spacing: -0.2px;
   }
 }
 
-/* Glassmorphism Design Utility Classes */
-.glass-nav {
-  background: rgba(255, 255, 255, 0.75);
-  backdrop-filter: blur(16px);
-  -webkit-backdrop-filter: blur(16px);
-  border-bottom: 1px solid rgba(226, 232, 240, 0.8);
+/* Vercel Design Language System Utilities */
+.vercel-card {
+  background-color: #ffffff;
+  border: 1px solid #ebebeb;
+  border-radius: 12px;
+  box-shadow: 0 1px 2px 0 rgba(0, 0, 0, 0.04);
+  transition: all 0.15s ease;
 }
 
-.glass-card {
-  background: rgba(255, 255, 255, 0.7);
-  backdrop-filter: blur(12px);
-  -webkit-backdrop-filter: blur(12px);
-  border: 1px solid rgba(226, 232, 240, 0.9);
-  box-shadow: 0 10px 30px -5px rgba(0, 0, 0, 0.04), 0 4px 12px -2px rgba(0, 0, 0, 0.02);
+.vercel-card:hover {
+  border-color: #171717;
 }
 
-.glass-card-hover {
-  transition: all 0.25s cubic-bezier(0.16, 1, 0.3, 1);
+.vercel-card-soft {
+  background-color: #fafafa;
+  border: 1px solid #ebebeb;
+  border-radius: 12px;
 }
 
-.glass-card-hover:hover {
-  background: rgba(255, 255, 255, 0.9);
-  transform: translateY(-2px);
-  box-shadow: 0 20px 40px -10px rgba(0, 0, 0, 0.08);
-  border-color: rgba(16, 185, 129, 0.4);
+.vercel-btn-primary {
+  background-color: #171717;
+  color: #ffffff;
+  border-radius: 8px;
+  font-weight: 500;
+  transition: background-color 0.15s ease;
 }
 
-.glass-modal {
-  background: rgba(255, 255, 255, 0.85);
-  backdrop-filter: blur(24px);
-  -webkit-backdrop-filter: blur(24px);
-  border: 1px solid rgba(226, 232, 240, 0.9);
-  box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.15);
+.vercel-btn-primary:hover {
+  background-color: #333333;
 }
 
-.glass-button {
-  background: rgba(255, 255, 255, 0.6);
-  backdrop-filter: blur(8px);
-  -webkit-backdrop-filter: blur(8px);
-  border: 1px solid rgba(203, 213, 225, 0.8);
-  transition: all 0.2s ease;
-}
-
-.glass-button:hover {
-  background: rgba(255, 255, 255, 0.95);
-  border-color: rgba(16, 185, 129, 0.5);
-}
-
-.glass-input {
-  background: rgba(255, 255, 255, 0.8);
-  backdrop-filter: blur(8px);
-  -webkit-backdrop-filter: blur(8px);
-  border: 1px solid rgba(203, 213, 225, 0.9);
-  transition: all 0.2s ease;
-}
-
-.glass-input:focus {
-  background: #ffffff;
-  border-color: #10b981;
-  box-shadow: 0 0 0 3px rgba(16, 185, 129, 0.15);
-}
-
-/* Custom Scrollbars */
-::-webkit-scrollbar {
-  width: 6px;
-  height: 6px;
-}
-
-::-webkit-scrollbar-track {
-  background: #f8fafc;
-}
-
-::-webkit-scrollbar-thumb {
-  background: #cbd5e1;
+.vercel-pill {
+  background-color: #171717;
+  color: #ffffff;
   border-radius: 9999px;
+  font-size: 11px;
+  font-weight: 600;
+  letter-spacing: -0.2px;
 }
 
-::-webkit-scrollbar-thumb:hover {
-  background: #10b981;
+/* Vercel Multi-Color Mesh Gradients */
+.gradient-develop {
+  background: linear-gradient(135deg, #007cf0 0%, #00dfd8 100%);
 }
 
-/* Animations */
-@keyframes fadeIn {
-  from { opacity: 0; transform: scale(0.98); }
-  to { opacity: 1; transform: scale(1); }
+.gradient-preview {
+  background: linear-gradient(135deg, #7928ca 0%, #ff0080 100%);
 }
 
-.animate-fade-in {
-  animation: fadeIn 0.2s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+.gradient-ship {
+  background: linear-gradient(135deg, #ff4d4d 0%, #f9cb28 100%);
+}
+
+.gradient-text-develop {
+  background: linear-gradient(135deg, #007cf0 0%, #00dfd8 100%);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+}
+
+.gradient-text-preview {
+  background: linear-gradient(135deg, #7928ca 0%, #ff0080 100%);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+}
+
+/* Monospace Tabular Numbers for Ranks & Latency */
+.tabular-nums {
+  font-variant-numeric: tabular-nums;
+}
+
+/* Vercel Header Blur */
+.vercel-header {
+  background-color: rgba(255, 255, 255, 0.85);
+  backdrop-filter: blur(12px);
+  border-bottom: 1px solid #ebebeb;
 }

@@ -4,27 +4,34 @@ export default {
     "./index.html",
     "./src/**/*.{js,ts,jsx,tsx}",
   ],
-  darkMode: 'class',
   theme: {
     extend: {
-      colors: {
-        brand: {
-          50: '#f0fdf4',
-          100: '#dcfce7',
-          500: '#10b981',
-          600: '#059669',
-          700: '#047857',
-          900: '#064e3b',
-          accent: '#2563eb',
-          purple: '#7c3aed',
-        },
-      },
       fontFamily: {
-        sans: ['"Plus Jakarta Sans"', 'Inter', 'system-ui', 'sans-serif'],
+        sans: ['Geist', 'Inter', 'system-ui', '-apple-system', 'sans-serif'],
+        mono: ['Geist Mono', 'ui-monospace', 'SFMono-Regular', 'Menlo', 'Monaco', 'monospace'],
       },
-      boxShadow: {
-        glass: '0 8px 32px 0 rgba(31, 38, 135, 0.07)',
-        'glass-hover': '0 12px 40px 0 rgba(31, 38, 135, 0.12)',
+      colors: {
+        vercel: {
+          ink: '#171717',
+          canvas: '#ffffff',
+          soft: '#fafafa',
+          soft2: '#f5f5f5',
+          hairline: '#ebebeb',
+          hairlineStrong: '#a1a1a1',
+          mute: '#888888',
+          body: '#4d4d4d',
+          blue: '#0070f3',
+          violet: '#7928ca',
+          cyan: '#50e3c2',
+          magenta: '#eb367f',
+          amber: '#f5a623',
+        }
+      },
+      borderRadius: {
+        'v-sm': '6px',
+        'v-md': '8px',
+        'v-lg': '12px',
+        'v-xl': '16px',
       }
     },
   },
